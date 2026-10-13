@@ -665,11 +665,12 @@ export const CMSProvider = ({ children }) => {
   const syncToBackend = (pageKey, data) => {
     try {
       const token = localStorage.getItem("itlc_admin_token");
+      if (!token) return; // Skip background sync if not authenticated as admin
       fetch("/api/content.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ page_key: pageKey, content_data: data }),
       }).catch(() => {});

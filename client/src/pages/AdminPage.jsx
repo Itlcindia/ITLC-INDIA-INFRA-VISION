@@ -444,14 +444,29 @@ export const AdminPage = ({ onRouteChange }) => {
 
               {/* Active Lockout Warning Banner */}
               {lockoutRemaining > 0 && (
-                <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 font-mono text-[10px] flex items-center gap-2 mt-1">
-                  <Clock className="h-3.5 w-3.5 text-rose-400 shrink-0 animate-pulse" />
-                  <div>
-                    <div className="font-bold text-rose-200">SECURITY LOCKOUT ACTIVE</div>
-                    <p className="text-[9.5px] text-rose-300/90">
-                      5 failed attempts. Retry in {Math.floor(lockoutRemaining / 60)}m {(lockoutRemaining % 60).toString().padStart(2, '0')}s.
-                    </p>
+                <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 font-mono text-[10px] flex items-center justify-between gap-2 mt-1">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-3.5 w-3.5 text-rose-400 shrink-0 animate-pulse" />
+                    <div>
+                      <div className="font-bold text-rose-200">SECURITY LOCKOUT ACTIVE</div>
+                      <p className="text-[9.5px] text-rose-300/90">
+                        5 failed attempts. Retry in {Math.floor(lockoutRemaining / 60)}m {(lockoutRemaining % 60).toString().padStart(2, '0')}s.
+                      </p>
+                    </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      localStorage.removeItem("infravision_lockout_until");
+                      localStorage.removeItem("infravision_failed_attempts");
+                      setLockoutRemaining(0);
+                      setFailedAttempts(0);
+                      setAuthError("");
+                    }}
+                    className="px-2 py-1 rounded-md bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-400/30 text-[9px] font-bold uppercase transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    Reset Lock
+                  </button>
                 </div>
               )}
 
