@@ -94,32 +94,65 @@ const defaultServices = [
 // Default Team Members
 const defaultTeam = [
   {
-    id: 1,
-    name: "Er. Vivek Mehrotra",
-    role: "Chief Structural Engineer & Founder",
-    experience: "18+ Years",
+    id: "interior",
+    badgeTitle: "INTERIOR",
+    badgeSub: "DESIGNER",
+    tag: "SPATIAL ARCHITECTURE & FINISHES",
+    decree: "INTERIOR ARCHITECTURAL DECREE",
+    name: "Ar. Ananya Sharma",
+    role: "Lead Interior Architect & Spatial Stylist",
+    experience: "8+ Years Exp",
+    credentials: "B.Arch (SPA Delhi), LEED AP",
+    photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
+    bio: "8+ years specializing in luxury bespoke residences, bookmatched Italian Calacatta marble curation, automated circadian lighting layouts, and acoustic spatial serenity across Lucknow.",
+    specs: [
+      "65+ Luxury Villas Styled",
+      "Italian Stone Curation",
+      "3D BIM Clash-Free",
+      "Circadian Light Flow"
+    ],
+    signature: "Ar. Ananya Sharma ~"
+  },
+  {
+    id: "civil",
+    badgeTitle: "CIVIL",
+    badgeSub: "ENGINEER",
+    tag: "IS-456 STRUCTURAL EXECUTION",
+    decree: "CIVIL STRUCTURAL DECREE",
+    name: "Er. Rajesh Verma",
+    role: "Chief Structural & Civil Site Engineer",
+    experience: "12+ Years Exp",
     credentials: "M.Tech Civil (IIT Roorkee), IS-456 Auditor",
-    photo: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop",
-    bio: "Pioneering luxury raft foundations, seismic Zone-III structural calculations, and turnkey contracting benchmarks across Uttar Pradesh.",
+    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop",
+    bio: "12+ years executing monolithic raft foundations, non-destructive concrete cube tests, and certified TATA Tiscon FE-550D rebar grid placements under strict OSHA zero-incident safety.",
+    specs: [
+      "80+ Landmark Sites Cast",
+      "Seismic Zone 3 Audits",
+      "Drone Telemetry Lead",
+      "OSHA Zero-Incident"
+    ],
+    signature: "Er. Rajesh Verma ~"
   },
   {
-    id: 2,
-    name: "Ar. Shreya Nambiar",
-    role: "Principal Architectural Director",
-    experience: "14+ Years",
-    credentials: "B.Arch (SPA Delhi), LEED AP Certified",
-    photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
-    bio: "Specializing in bioclimatic villa elevations, cantilevered slabs, double-height glazing, and seamless indoor-outdoor sanctuaries.",
-  },
-  {
-    id: 3,
-    name: "Er. Ankit Srivastava",
-    role: "Head of Project Logistics & Site Safety",
-    experience: "12+ Years",
-    credentials: "B.Tech Civil, OSHA Certified Site Auditor",
-    photo: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=600&auto=format&fit=crop",
-    bio: "Supervising multi-crane rigging, daily slump cube testing, and zero-compromise timeline coordination at active high-rise builds.",
-  },
+    id: "bim",
+    badgeTitle: "BIM & MEP",
+    badgeSub: "DIRECTOR",
+    tag: "3D BIM & MEP INFRASTRUCTURE",
+    decree: "DIGITAL TWIN BIM DECREE",
+    name: "Er. Sameer Khan",
+    role: "Senior MEP & 3D BIM Director",
+    experience: "9+ Years Exp",
+    credentials: "B.Tech Mechanical, BIM Level 3",
+    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop",
+    bio: "9+ years coordinating micro-millimeter 3D BIM clash-detection, automated HVAC ducting, acoustic conduit isolation, and LEED-compliant energy management grids with zero site delays.",
+    specs: [
+      "70+ Turnkey Milestones",
+      "Micro-Clash Resolution",
+      "Concealed MEP Grids",
+      "LEED Energy Standards"
+    ],
+    signature: "Er. Sameer Khan ~"
+  }
 ];
 
 // Default About Content

@@ -18,8 +18,10 @@ import { Card3D } from "../components/ui/Card3D";
 import { BorderBeam } from "../components/ui/BorderBeam";
 import { MagneticButton } from "../components/ui/MagneticButton";
 import { soundManager } from "../lib/sound";
+import { useCMS } from "../context/CMSContext";
 
 export const AboutPage = ({ onInquiryClick }) => {
+  const { team = [], aboutContent = {} } = useCMS();
   const [openCards, setOpenCards] = useState({});
   const scrollTrackRef = useRef(null);
 
@@ -33,65 +35,8 @@ export const AboutPage = ({ onInquiryClick }) => {
     scrollTrackRef.current?.scrollBy({ left: offset, behavior: "smooth" });
   };
 
-  const teamMembers = [
-    {
-      id: "interior",
-      badgeTitle: "INTERIOR",
-      badgeSub: "DESIGNER",
-      tag: "SPATIAL ARCHITECTURE & FINISHES",
-      decree: "INTERIOR ARCHITECTURAL DECREE",
-      name: "Ar. Ananya Sharma",
-      role: "Lead Interior Architect & Spatial Stylist",
-      experience: "8+ Years Exp",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
-      bio: "8+ years specializing in luxury bespoke residences, bookmatched Italian Calacatta marble curation, automated circadian lighting layouts, and acoustic spatial serenity across Lucknow.",
-      specs: [
-        "65+ Luxury Villas Styled",
-        "Italian Stone Curation",
-        "3D BIM Clash-Free",
-        "Circadian Light Flow"
-      ],
-      signature: "Ar. Ananya Sharma ~"
-    },
-    {
-      id: "civil",
-      badgeTitle: "CIVIL",
-      badgeSub: "ENGINEER",
-      tag: "IS-456 STRUCTURAL EXECUTION",
-      decree: "CIVIL STRUCTURAL DECREE",
-      name: "Er. Rajesh Verma",
-      role: "Chief Structural & Civil Site Engineer",
-      experience: "12+ Years Exp",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop",
-      bio: "12+ years executing monolithic raft foundations, non-destructive concrete cube tests, and certified TATA Tiscon FE-550D rebar grid placements under strict OSHA zero-incident safety.",
-      specs: [
-        "80+ Landmark Sites Cast",
-        "Seismic Zone 3 Audits",
-        "Drone Telemetry Lead",
-        "OSHA Zero-Incident"
-      ],
-      signature: "Er. Rajesh Verma ~"
-    },
-    {
-      id: "bim",
-      badgeTitle: "BIM & MEP",
-      badgeSub: "DIRECTOR",
-      tag: "3D BIM & MEP INFRASTRUCTURE",
-      decree: "DIGITAL TWIN BIM DECREE",
-      name: "Er. Sameer Khan",
-      role: "Senior MEP & 3D BIM Director",
-      experience: "9+ Years Exp",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop",
-      bio: "9+ years coordinating micro-millimeter 3D BIM clash-detection, automated HVAC ducting, acoustic conduit isolation, and LEED-compliant energy management grids with zero site delays.",
-      specs: [
-        "70+ Turnkey Milestones",
-        "Micro-Clash Resolution",
-        "Concealed MEP Grids",
-        "LEED Energy Standards"
-      ],
-      signature: "Er. Sameer Khan ~"
-    }
-  ];
+  const teamMembers = Array.isArray(team) ? team : [];
+
   return (
     <div className="pt-28 pb-20 px-4 sm:px-8 max-w-7xl mx-auto space-y-12 sm:space-y-14">
       
@@ -119,24 +64,24 @@ export const AboutPage = ({ onInquiryClick }) => {
                 Who We Are
               </span>
               <h2 className="font-display text-[26px] sm:text-[31px] font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
-                Pioneering Premium Construction & Architecture
+                {aboutContent?.heading || "Pioneering Premium Construction & Architecture"}
               </h2>
             </div>
 
             <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-gray-200 leading-relaxed font-sans">
               <p>
-                For over 10 years, InfraVision by ITLC India Private Limited has stood at the intersection of aesthetic design and structural integrity. We treat every project not just as a building, but as a monument to precision engineering.
+                {aboutContent?.missionStatement || "For over 10 years, InfraVision by ITLC India Private Limited has stood at the intersection of aesthetic design and structural integrity. We treat every project not just as a building, but as a monument to precision engineering."}
               </p>
               <p>
-                Our collaborative team of architects, project managers, and expert builders ensure that each detail aligns with our client's vision. From ground breaking to key handover, our commitment to green practices, safety, and modern design stands unmatched.
+                {aboutContent?.founderQuote || "Our collaborative team of architects, project managers, and expert builders ensure that each detail aligns with our client's vision. From ground breaking to key handover, our commitment to green practices, safety, and modern design stands unmatched."}
               </p>
             </div>
 
-            {/* 3 Metric Stats (10 Years Exp, 120 Projects, 45 Awards) */}
+            {/* 3 Metric Stats (Exp, Projects, Quality Record) */}
             <div className="grid grid-cols-3 gap-3 pt-2">
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#08132D] border border-blue-400 dark:border-sky-400/60 text-center space-y-1 shadow-sm shadow-blue-500/10 dark:shadow-sky-400/20">
                 <div className="font-display text-2xl sm:text-4xl font-extrabold text-blue-600 dark:text-sky-400">
-                  10
+                  {aboutContent?.foundingYear ? `${Math.max(1, new Date().getFullYear() - parseInt(aboutContent.foundingYear || "2012"))}+` : "10+"}
                 </div>
                 <div className="font-mono text-[10px] sm:text-xs text-slate-700 dark:text-gray-300 font-semibold uppercase tracking-wider">
                   Years Exp
@@ -145,7 +90,7 @@ export const AboutPage = ({ onInquiryClick }) => {
 
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#08132D] border border-blue-400 dark:border-sky-400/60 text-center space-y-1 shadow-sm shadow-blue-500/10 dark:shadow-sky-400/20">
                 <div className="font-display text-2xl sm:text-4xl font-extrabold text-blue-600 dark:text-sky-400">
-                  120
+                  {aboutContent?.completedVillas || "120+"}
                 </div>
                 <div className="font-mono text-[10px] sm:text-xs text-slate-700 dark:text-gray-300 font-semibold uppercase tracking-wider">
                   Projects
@@ -154,10 +99,10 @@ export const AboutPage = ({ onInquiryClick }) => {
 
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#08132D] border border-blue-400 dark:border-sky-400/60 text-center space-y-1 shadow-sm shadow-blue-500/10 dark:shadow-sky-400/20">
                 <div className="font-display text-2xl sm:text-4xl font-extrabold text-blue-600 dark:text-sky-400">
-                  45
+                  {aboutContent?.onTimeRecord || "100%"}
                 </div>
                 <div className="font-mono text-[10px] sm:text-xs text-slate-700 dark:text-gray-300 font-semibold uppercase tracking-wider">
-                  Awards
+                  Quality Rate
                 </div>
               </div>
             </div>
@@ -335,114 +280,141 @@ export const AboutPage = ({ onInquiryClick }) => {
           className="flex gap-6 sm:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-1 items-start"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {teamMembers.map((member, idx) => {
-            const isOpen = !!openCards[idx];
+          {teamMembers.length === 0 ? (
+            <div className="w-full text-center py-12 px-6 rounded-3xl bg-blue-50/50 dark:bg-sky-950/20 border border-dashed border-blue-300 dark:border-sky-500/30">
+              <Users className="w-8 h-8 text-blue-500 dark:text-sky-400 mx-auto mb-2 opacity-70" />
+              <p className="font-mono text-sm text-slate-700 dark:text-slate-300 font-semibold">
+                No team members currently active in the leadership roster.
+              </p>
+              <p className="font-mono text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Add specialists or engineers from the Admin Control Center (MY TEAM).
+              </p>
+            </div>
+          ) : (
+            teamMembers.map((member, idx) => {
+              const isOpen = !!openCards[idx];
+              const memberImg = member.photo || member.image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop";
+              const roleText = member.role || "Lead Specialist";
+              const decreeText = member.decree || `${roleText.toUpperCase()} DECREE`;
+              const tagText = member.tag || member.credentials || "IS-456 STRUCTURAL EXECUTION";
+              const sigText = member.signature || `${member.name || "Leader"} ~`;
 
-            return (
-              <div
-                key={member.id}
-                className="snap-center shrink-0 w-[320px] sm:w-[365px] flex flex-col items-center"
-              >
-                {/* Top Architectural Titanium Cylinder Rod */}
-                <div className="w-full h-14 bg-gradient-to-r from-slate-100 via-blue-50 to-slate-100 dark:from-[#0B1A3C] dark:via-[#132A5E] dark:to-[#0B1A3C] rounded-full shadow-xl border border-blue-300 dark:border-sky-400/40 flex items-center justify-between px-3 relative z-30">
-                  <div className="w-5 h-8 rounded-l-full bg-gradient-to-r from-blue-600 to-sky-500 shadow-inner flex items-center justify-center border border-white/20">
-                    <span className="w-1.5 h-3 rounded-full bg-white/40" />
-                  </div>
+              const roleWords = roleText.trim().split(/\s+/);
+              const badgeTitle = member.badgeTitle || (roleWords[0] || "LEAD").toUpperCase();
+              const badgeSub = member.badgeSub || (roleWords.slice(1).join(" ") || "OFFICER").toUpperCase();
 
-                  <div className="font-mono text-[10px] font-bold text-blue-700 dark:text-sky-300 tracking-[0.2em] uppercase truncate px-2 text-center">
-                    {member.decree}
-                  </div>
+              const specsList = Array.isArray(member.specs) && member.specs.length > 0
+                ? member.specs
+                : (member.credentials 
+                    ? member.credentials.split(",").map(s => s.trim()).filter(Boolean)
+                    : ["Certified Lead", "Site Supervision", "Grade-A Execution"]);
 
-                  <div className="w-5 h-8 rounded-r-full bg-gradient-to-r from-sky-500 to-blue-600 shadow-inner flex items-center justify-center border border-white/20">
-                    <span className="w-1.5 h-3 rounded-full bg-white/40" />
-                  </div>
-                </div>
-
-                {/* The Unrolling Dossier Sheet (Grid template rows transition for smooth unfurl) */}
+              return (
                 <div
-                  className={`w-[92%] -mt-2 relative z-20 grid transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                  }`}
+                  key={member.id || idx}
+                  className="snap-center shrink-0 w-[320px] sm:w-[365px] flex flex-col items-center"
                 >
-                  <div className="overflow-hidden">
-                    <div className="bg-white/95 dark:bg-gradient-to-b dark:from-[#0F224D] dark:via-[#0A1838] dark:to-[#05112B] border-x-2 border-b-2 border-blue-400 dark:border-sky-400/60 rounded-b-3xl shadow-2xl p-5 pt-8 pb-10 space-y-3.5 text-slate-900 dark:text-white">
-                      
-                      <div className="flex items-center justify-between border-b border-slate-200 dark:border-sky-400/20 pb-2 text-[9px] font-mono font-bold text-blue-600 dark:text-sky-300">
-                        <span>{member.tag}</span>
-                        <span>{member.experience}</span>
-                      </div>
+                  {/* Top Architectural Titanium Cylinder Rod */}
+                  <div className="w-full h-14 bg-gradient-to-r from-slate-100 via-blue-50 to-slate-100 dark:from-[#0B1A3C] dark:via-[#132A5E] dark:to-[#0B1A3C] rounded-full shadow-xl border border-blue-300 dark:border-sky-400/40 flex items-center justify-between px-3 relative z-30">
+                    <div className="w-5 h-8 rounded-l-full bg-gradient-to-r from-blue-600 to-sky-500 shadow-inner flex items-center justify-center border border-white/20">
+                      <span className="w-1.5 h-3 rounded-full bg-white/40" />
+                    </div>
 
-                      {/* Photo + Beside it: Name, Role, Bio */}
-                      <div className="flex items-start gap-3.5">
-                        <div className="w-24 h-28 shrink-0 rounded-2xl overflow-hidden border-2 border-blue-400 dark:border-sky-400/60 shadow-lg bg-blue-50 dark:bg-sky-500/10">
-                          <img
-                            src={member.image}
-                            alt={member.name}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                        </div>
+                    <div className="font-mono text-[10px] font-bold text-blue-700 dark:text-sky-300 tracking-[0.2em] uppercase truncate px-2 text-center">
+                      {decreeText}
+                    </div>
 
-                        <div className="space-y-1 min-w-0">
-                          <span className="text-[9px] font-mono font-bold tracking-wider text-blue-600 dark:text-sky-400 uppercase">
-                            OFFICIAL SPECIALIST
-                          </span>
-                          <h3 className="font-display text-[16px] sm:text-[17px] font-bold text-slate-900 dark:text-white leading-tight">
-                            {member.name}
-                          </h3>
-                          <p className="font-mono text-[9.5px] font-bold text-blue-600 dark:text-sky-300">
-                            {member.role}
-                          </p>
-                          <p className="text-[12px] sm:text-[13px] text-slate-600 dark:text-gray-300 font-sans leading-relaxed pt-0.5">
-                            {member.bio}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Competencies */}
-                      <div className="pt-2 border-t border-slate-200 dark:border-sky-400/20 grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-700 dark:text-gray-200 font-semibold">
-                        {member.specs.map((spec, sIdx) => (
-                          <div key={sIdx} className="flex items-center gap-1 truncate">
-                            <span className="text-blue-600 dark:text-sky-400">•</span>
-                            <span className="truncate">{spec}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Official Verification & Signature Row */}
-                      <div className="pt-2 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-gray-400">
-                        <span>VERIFIED ITLC INDIA</span>
-                        <span className="font-serif italic text-xs font-bold text-blue-600 dark:text-sky-400">
-                          {member.signature}
-                        </span>
-                      </div>
-
+                    <div className="w-5 h-8 rounded-r-full bg-gradient-to-r from-sky-500 to-blue-600 shadow-inner flex items-center justify-center border border-white/20">
+                      <span className="w-1.5 h-3 rounded-full bg-white/40" />
                     </div>
                   </div>
-                </div>
 
-                {/* Circular Seal (Physically bonded directly to bottom center of the letter) */}
-                <div className="relative z-40 -mt-7 flex justify-center w-full">
-                  <button
-                    onClick={() => toggleCard(idx)}
-                    aria-label={`Toggle ${member.name} profile`}
-                    className="w-20 h-20 sm:w-[84px] sm:h-[84px] rounded-full bg-gradient-to-br from-blue-600 via-sky-500 to-blue-800 dark:from-[#1E3A8A] dark:via-[#0284C7] dark:to-[#081533] border-2 border-white dark:border-sky-300 shadow-2xl shadow-blue-500/40 dark:shadow-sky-400/50 flex flex-col items-center justify-center p-1.5 text-center cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-300 ring-2 ring-blue-400/30"
+                  {/* The Unrolling Dossier Sheet (Grid template rows transition for smooth unfurl) */}
+                  <div
+                    className={`w-[92%] -mt-2 relative z-20 grid transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                    }`}
                   >
-                    <span className="text-[10px] sm:text-[10.5px] font-mono font-black text-white leading-none uppercase tracking-wider drop-shadow-md">
-                      {member.badgeTitle}
-                    </span>
-                    <span className="text-[9.5px] sm:text-[10px] font-mono font-black text-sky-100 leading-tight uppercase tracking-wider drop-shadow-md mt-0.5">
-                      {member.badgeSub}
-                    </span>
-                    <div className="mt-1 flex items-center gap-1 text-[8px] font-mono font-black text-white bg-black/40 dark:bg-black/50 px-2 py-0.5 rounded-full border border-white/30 shadow-inner">
-                      <span>{isOpen ? "▲ WRAP" : "▼ TAP OPEN"}</span>
-                    </div>
-                  </button>
-                </div>
+                    <div className="overflow-hidden">
+                      <div className="bg-white/95 dark:bg-gradient-to-b dark:from-[#0F224D] dark:via-[#0A1838] dark:to-[#05112B] border-x-2 border-b-2 border-blue-400 dark:border-sky-400/60 rounded-b-3xl shadow-2xl p-5 pt-8 pb-10 space-y-3.5 text-slate-900 dark:text-white">
+                        
+                        <div className="flex items-center justify-between border-b border-slate-200 dark:border-sky-400/20 pb-2 text-[9px] font-mono font-bold text-blue-600 dark:text-sky-300">
+                          <span className="truncate pr-2">{tagText}</span>
+                          <span className="shrink-0">{member.experience || "10+ Years Exp"}</span>
+                        </div>
 
-              </div>
-            );
-          })}
+                        {/* Photo + Beside it: Name, Role, Bio */}
+                        <div className="flex items-start gap-3.5">
+                          <div className="w-24 h-28 shrink-0 rounded-2xl overflow-hidden border-2 border-blue-400 dark:border-sky-400/60 shadow-lg bg-blue-50 dark:bg-sky-500/10">
+                            <img
+                              src={memberImg}
+                              alt={member.name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+
+                          <div className="space-y-1 min-w-0">
+                            <span className="text-[9px] font-mono font-bold tracking-wider text-blue-600 dark:text-sky-400 uppercase">
+                              OFFICIAL SPECIALIST
+                            </span>
+                            <h3 className="font-display text-[16px] sm:text-[17px] font-bold text-slate-900 dark:text-white leading-tight">
+                              {member.name}
+                            </h3>
+                            <p className="font-mono text-[9.5px] font-bold text-blue-600 dark:text-sky-300">
+                              {member.role}
+                            </p>
+                            <p className="text-[12px] sm:text-[13px] text-slate-600 dark:text-gray-300 font-sans leading-relaxed pt-0.5">
+                              {member.bio || "Key contributor to INFRA VISION's architectural engineering leadership."}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Competencies */}
+                        <div className="pt-2 border-t border-slate-200 dark:border-sky-400/20 grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-700 dark:text-gray-200 font-semibold">
+                          {specsList.map((spec, sIdx) => (
+                            <div key={sIdx} className="flex items-center gap-1 truncate">
+                              <span className="text-blue-600 dark:text-sky-400">•</span>
+                              <span className="truncate">{spec}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Official Verification & Signature Row */}
+                        <div className="pt-2 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-gray-400">
+                          <span>VERIFIED ITLC INDIA</span>
+                          <span className="font-serif italic text-xs font-bold text-blue-600 dark:text-sky-400">
+                            {sigText}
+                          </span>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Circular Seal (Physically bonded directly to bottom center of the letter) */}
+                  <div className="relative z-40 -mt-7 flex justify-center w-full">
+                    <button
+                      onClick={() => toggleCard(idx)}
+                      aria-label={`Toggle ${member.name} profile`}
+                      className="w-20 h-20 sm:w-[84px] sm:h-[84px] rounded-full bg-gradient-to-br from-blue-600 via-sky-500 to-blue-800 dark:from-[#1E3A8A] dark:via-[#0284C7] dark:to-[#081533] border-2 border-white dark:border-sky-300 shadow-2xl shadow-blue-500/40 dark:shadow-sky-400/50 flex flex-col items-center justify-center p-1.5 text-center cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-300 ring-2 ring-blue-400/30"
+                    >
+                      <span className="text-[10px] sm:text-[10.5px] font-mono font-black text-white leading-none uppercase tracking-wider drop-shadow-md">
+                        {badgeTitle}
+                      </span>
+                      <span className="text-[9.5px] sm:text-[10px] font-mono font-black text-sky-100 leading-tight uppercase tracking-wider drop-shadow-md mt-0.5">
+                        {badgeSub}
+                      </span>
+                      <div className="mt-1 flex items-center gap-1 text-[8px] font-mono font-black text-white bg-black/40 dark:bg-black/50 px-2 py-0.5 rounded-full border border-white/30 shadow-inner">
+                        <span>{isOpen ? "▲ WRAP" : "▼ TAP OPEN"}</span>
+                      </div>
+                    </button>
+                  </div>
+
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 

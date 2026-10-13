@@ -3385,7 +3385,7 @@ const TeamEditorView = ({
           >
             <div className="space-y-3">
               <div className="h-28 w-28 rounded-2xl overflow-hidden border-2 border-sky-400/40 mx-auto bg-slate-100 dark:bg-slate-800">
-                <img src={m.photo} alt={m.name} className="w-full h-full object-cover" />
+                <img src={m.photo || m.image} alt={m.name} className="w-full h-full object-cover" />
               </div>
               <div className="text-center space-y-0.5">
                 <h4 className="font-display text-base font-bold text-slate-900 dark:text-white">{m.name}</h4>
