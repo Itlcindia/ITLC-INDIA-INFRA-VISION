@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-void: #050C1E;
+    --brand-blue: #38BDF8;
+    --brand-cyan: #60A5FA;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* ☀️ DAYLIGHT LUXURY THEME (Light Mode) */
+  html:not(.dark) {
+    background-color: #F1F5F9;
+    color: #0F172A;
+  }
+
+  html:not(.dark) body {
+    margin: 0;
+    padding: 0;
+    background-color: #F1F5F9;
+    background-image: radial-gradient(circle at 50% -10%, #D8E8F8 0%, #EEF4FA 40%, #F8FAFC 100%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+    color: #0F172A;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 🌙 MIDNIGHT CYBER THEME (Dark Mode) */
+  html.dark {
+    background-color: #050C1E;
+    color: #FFFFFF;
+  }
+
+  html.dark body {
+    margin: 0;
+    padding: 0;
+    background-color: #050C1E;
+    background-image: radial-gradient(circle at 50% -10%, #0E2458 0%, #06112C 50%, #030714 100%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+    color: #FFFFFF;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: #2563EB;
+    color: #FFFFFF;
+  }
+}
+
+/* Scrollbar - Dark & Light Adaptive */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #050C1E;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #1E3A8A;
+  border-radius: 3px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #38BDF8;
+}
+
+html:not(.dark) ::-webkit-scrollbar-track {
+  background: #E2E8F0;
+}
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: #93C5FD;
+  border-radius: 3px;
+}
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
+}
+
+/* 🌙 Dark Mode Glassmorphism Panels */
+.dark .glass-panel {
+  background: rgba(12, 27, 62, 0.85);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), inset 0 1px 2px 0 rgba(255, 255, 255, 0.25);
+}
+
+.dark .glass-pill {
+  background: rgba(14, 32, 74, 0.92);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7);
+}
+
+.dark .card-elevated {
+  background: linear-gradient(180deg, rgba(16, 36, 82, 0.95) 0%, rgba(9, 21, 51, 0.95) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), inset 0 1px 2px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* ☀️ Light Mode Glassmorphism Panels (Exact match to Reference Image) */
+html:not(.dark) .glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 45px -12px rgba(30, 58, 138, 0.08), 0 4px 16px rgba(0, 0, 0, 0.03), inset 0 1px 2px 0 rgba(255, 255, 255, 1);
+}
+
+html:not(.dark) .glass-pill {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(203, 213, 225, 0.7);
+  box-shadow: 0 8px 20px -4px rgba(30, 58, 138, 0.07);
+}
+
+html:not(.dark) .card-elevated {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 45px -12px rgba(30, 58, 138, 0.08), inset 0 1px 2px 0 rgba(255, 255, 255, 1);
+}
+
+/* CAD Grid Background - Light & Dark adaptive */
+.dark .bg-cad-grid {
+  background-image: 
+    linear-gradient(to right, rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+html:not(.dark) .bg-cad-grid {
+  background-image: 
+    linear-gradient(to right, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Horizon laser beam */
+.laser-horizon {
+  background: linear-gradient(90deg, transparent 0%, #FFFFFF 25%, #38BDF8 50%, #2563EB 75%, transparent 100%);
+  height: 1.5px;
+}
+
+/* ========================================================
+   4-LEVEL UNIFIED TYPOGRAPHY DESIGN SYSTEM
+   ======================================================== */
+@layer utilities {
+  /* Level 1: Section Level */
+  .section-tag {
+    @apply font-mono text-xs uppercase tracking-widest font-bold;
+  }
+  .section-heading {
+    @apply font-display text-[26px] sm:text-[31px] font-bold tracking-tight text-slate-900 dark:text-white;
+  }
+  .section-desc {
+    @apply text-[13px] text-slate-600 dark:text-gray-300 leading-relaxed;
+  }
+
+  /* Level 2: Large / Spotlight / Cylindrical Consultation Cards */
+  .card-heading-lg {
+    @apply font-display text-[20px] sm:text-[24px] font-bold tracking-tight text-slate-900 dark:text-white leading-tight;
+  }
+  .card-desc-lg {
+    @apply text-[13px] sm:text-[14px] text-slate-600 dark:text-gray-300 leading-relaxed font-sans;
+  }
+
+  /* Level 3: Standard 3/4-Column Grid Cards (Services, Projects, Team, News, WhyChoose) */
+  .card-heading-md {
+    @apply font-display text-[16px] sm:text-[17px] font-bold text-slate-900 dark:text-white leading-snug;
+  }
+  .card-desc-md {
+    @apply text-[12px] sm:text-[13px] text-slate-600 dark:text-gray-200 leading-relaxed font-sans;
+  }
+
+  /* Level 4: Small / Micro / Step Cards (01-02-03 Steps, Specs, Chips) */
+  .card-heading-sm {
+    @apply font-display text-[14px] font-bold text-slate-900 dark:text-white leading-snug;
+  }
+  .card-desc-sm {
+    @apply text-[11.5px] sm:text-[12px] text-slate-600 dark:text-gray-200 leading-relaxed font-sans;
+  }
+}

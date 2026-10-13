@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Allow direct access to backend API
+  RewriteCond %{REQUEST_URI} ^/api/ [NC]
+  RewriteRule ^api/ - [L]
+
+  # Serve existing files and directories directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Route all other SPA client-side routes to index.html
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Prevent directory browsing
+Options -Indexes
+
+# Security headers fallback
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-XSS-Protection "1; mode=block"
+</IfModule>

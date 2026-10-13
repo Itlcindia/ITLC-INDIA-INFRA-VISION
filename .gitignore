@@ -1,0 +1,55 @@
+# ========================================================
+# INFRA VISION - Production Clean Git Ignore Rules
+# Author & Lead Architect: Pankaj
+# ========================================================
+
+# Dependencies (Installed via npm install)
+node_modules/
+client/node_modules/
+
+# Production Build Artifacts (Built via npm run build)
+client/dist/
+dist/
+dist-ssr/
+
+# Environment Variables & Sensitive Credentials
+.env
+.env.local
+.env.*.local
+*.local
+client/.env
+client/.env.local
+api/config.local.php
+api/db_password.txt
+
+# Archive Packages & Temporary Zips
+*.zip
+*.tar.gz
+*.rar
+
+# Uploaded Media in Production (Preserves directory structure with .gitkeep)
+api/uploads/*
+!api/uploads/.gitkeep
+!api/uploads/.htaccess
+!api/uploads/projects/
+api/uploads/projects/*
+!api/uploads/projects/.gitkeep
+
+# Logs & Debuggers
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# System & IDE Cache Files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
