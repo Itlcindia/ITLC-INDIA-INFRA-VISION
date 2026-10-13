@@ -296,7 +296,8 @@ export const AboutPage = ({ onInquiryClick }) => {
               const memberImg = member.photo || member.image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop";
               const roleText = member.role || "Lead Specialist";
               const decreeText = member.decree || `${roleText.toUpperCase()} DECREE`;
-              const tagText = member.tag || member.credentials || "IS-456 STRUCTURAL EXECUTION";
+              const qualText = member.qualification || member.credentials || "B.Tech Civil";
+              const tagText = member.tag || qualText || "IS-456 STRUCTURAL EXECUTION";
               const sigText = member.signature || `${member.name || "Leader"} ~`;
 
               const roleWords = roleText.trim().split(/\s+/);
@@ -305,8 +306,8 @@ export const AboutPage = ({ onInquiryClick }) => {
 
               const specsList = Array.isArray(member.specs) && member.specs.length > 0
                 ? member.specs
-                : (member.credentials 
-                    ? member.credentials.split(",").map(s => s.trim()).filter(Boolean)
+                : (qualText 
+                    ? qualText.split(",").map(s => s.trim()).filter(Boolean)
                     : ["Certified Lead", "Site Supervision", "Grade-A Execution"]);
 
               return (

@@ -3321,11 +3321,35 @@ const TeamEditorView = ({
   triggerToast,
 }) => {
   const [showAddMember, setShowAddMember] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
-  const [experience, setExperience] = useState("10+ Years");
-  const [credentials, setCredentials] = useState("B.Tech Civil");
+  const [qualification, setQualification] = useState("");
+  const [experience, setExperience] = useState("");
+  const [bio, setBio] = useState("");
   const [photo, setPhoto] = useState("https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
+
+  const handleOpenAddMember = () => {
+    setEditingMember(null);
+    setName("");
+    setRole("");
+    setQualification("B.Tech Civil");
+    setExperience("10+ Years Exp");
+    setBio("Key contributor to INFRA VISION's architectural engineering leadership.");
+    setPhoto("https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
+    setShowAddMember(true);
+  };
+
+  const handleOpenEditMember = (m) => {
+    setEditingMember(m);
+    setName(m.name || "");
+    setRole(m.role || "");
+    setQualification(m.qualification || m.credentials || "B.Tech Civil");
+    setExperience(m.experience || "10+ Years Exp");
+    setBio(m.bio || "Key contributor to INFRA VISION's architectural engineering leadership.");
+    setPhoto(m.photo || m.image || "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
+    setShowAddMember(true);
+  };
 
   const handleUploadPhoto = async (e) => {
     const file = e.target.files?.[0];
@@ -3339,22 +3363,29 @@ const TeamEditorView = ({
     }
   };
 
-  const handleAddMemberSubmit = (e) => {
+  const handleMemberSubmit = (e) => {
     e.preventDefault();
-    const newMember = {
-      id: Date.now(),
-      name,
-      role,
-      experience,
-      credentials,
-      photo,
-      bio: "Key contributor to INFRA VISION's architectural engineering leadership.",
+    const cleanQual = qualification.trim() || "B.Tech Civil";
+    const memberData = {
+      id: editingMember ? editingMember.id : Date.now(),
+      name: name.trim(),
+      role: role.trim(),
+      qualification: cleanQual,
+      credentials: cleanQual, // backwards-compatibility alias
+      experience: experience.trim() || "10+ Years Exp",
+      bio: bio.trim() || "Key contributor to INFRA VISION's architectural engineering leadership.",
+      photo: photo || "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop",
     };
-    addTeamMember(newMember);
+
+    if (editingMember) {
+      updateTeamMember(memberData);
+      triggerToast(`Team member "${name}" updated successfully!`);
+    } else {
+      addTeamMember(memberData);
+      triggerToast(`Team member "${name}" added to public roster!`);
+    }
     setShowAddMember(false);
-    setName("");
-    setRole("");
-    triggerToast(`Team member "${name}" added to public roster!`);
+    setEditingMember(null);
   };
 
   return (
@@ -3365,11 +3396,11 @@ const TeamEditorView = ({
             My Team <span className="text-sky-500 dark:text-sky-400">Leadership Roster</span>
           </h3>
           <p className="text-xs font-mono text-slate-600 dark:text-slate-400">
-            Manage principal architects, site supervisors, and upload headshots directly from your device gallery.
+            Manage principal architects, site supervisors, qualifications, experience, and headshots directly from your device gallery.
           </p>
         </div>
         <button
-          onClick={() => setShowAddMember(true)}
+          onClick={handleOpenAddMember}
           className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 text-white font-mono text-xs font-bold flex items-center gap-2 cursor-pointer shadow-lg shadow-sky-500/25"
         >
           <Plus className="h-4 w-4" />
@@ -3384,17 +3415,35 @@ const TeamEditorView = ({
             className="p-5 rounded-2xl bg-white dark:bg-gradient-to-b dark:from-[#0F224D] dark:to-[#091533] border-2 border-sky-400/50 hover:border-sky-500 dark:hover:border-sky-400 ring-1 ring-sky-300/25 shadow-xl shadow-slate-200/50 dark:shadow-black/80 transition-all space-y-3 flex flex-col justify-between"
           >
             <div className="space-y-3">
-              <div className="h-28 w-28 rounded-2xl overflow-hidden border-2 border-sky-400/40 mx-auto bg-slate-100 dark:bg-slate-800">
+              <div className="h-28 w-28 rounded-2xl overflow-hidden border-2 border-sky-400/40 mx-auto bg-slate-100 dark:bg-slate-800 shadow-md">
                 <img src={m.photo || m.image} alt={m.name} className="w-full h-full object-cover" />
               </div>
-              <div className="text-center space-y-0.5">
+              <div className="text-center space-y-1">
                 <h4 className="font-display text-base font-bold text-slate-900 dark:text-white">{m.name}</h4>
                 <p className="text-xs font-mono text-sky-600 dark:text-sky-400 font-semibold">{m.role}</p>
-                <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400">{m.credentials}</p>
+                <div className="flex items-center justify-center gap-1.5 flex-wrap pt-0.5">
+                  <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-sky-300 font-mono text-[10px] font-bold border border-blue-400/30">
+                    {m.qualification || m.credentials || "B.Tech Civil"}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-bold border border-emerald-400/30">
+                    {m.experience || "10+ Years Exp"}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 font-sans line-clamp-2 pt-1 leading-relaxed text-left bg-slate-50 dark:bg-black/20 p-2 rounded-xl border border-slate-200/60 dark:border-white/5">
+                  {m.bio || "Key contributor to INFRA VISION's architectural engineering leadership."}
+                </p>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-sky-400/15 flex justify-end">
+            <div className="pt-3 border-t border-sky-400/15 flex items-center justify-between">
+              <button
+                onClick={() => handleOpenEditMember(m)}
+                className="text-xs font-mono text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 flex items-center gap-1 cursor-pointer"
+              >
+                <Edit3 className="h-3.5 w-3.5" />
+                <span>Edit</span>
+              </button>
+
               <button
                 onClick={() => {
                   if (confirm(`Remove ${m.name} from public roster?`)) {
@@ -3412,23 +3461,27 @@ const TeamEditorView = ({
         ))}
       </div>
 
-      {/* Add Member Modal */}
+      {/* Add / Edit Member Modal */}
       {showAddMember && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <form
-            onSubmit={handleAddMemberSubmit}
-            className="w-full max-w-md p-6 rounded-3xl bg-white dark:bg-[#081534] border-2 border-sky-400 ring-1 ring-sky-300/30 shadow-2xl text-slate-900 dark:text-white space-y-4 font-mono text-xs"
+            onSubmit={handleMemberSubmit}
+            className="w-full max-w-lg p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#081534] border-2 border-sky-400 ring-1 ring-sky-300/30 shadow-2xl text-slate-900 dark:text-white space-y-4 font-mono text-xs max-h-[90vh] overflow-y-auto no-scrollbar"
           >
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-sky-400/20 pb-3">
-              <h4 className="font-display text-lg font-bold text-slate-900 dark:text-white">Add Team Member</h4>
-              <button onClick={() => setShowAddMember(false)} type="button" className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+              <h4 className="font-display text-lg font-bold text-slate-900 dark:text-white">
+                {editingMember ? "Edit Team Member" : "Add Team Member"}
+              </h4>
+              <button onClick={() => setShowAddMember(false)} type="button" className="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <div className="space-y-3 font-sans">
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">Full Name</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   required
@@ -3440,7 +3493,9 @@ const TeamEditorView = ({
               </div>
 
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">Role / Designation</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                  Role / Designation
+                </label>
                 <input
                   type="text"
                   required
@@ -3451,14 +3506,47 @@ const TeamEditorView = ({
                 />
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                    Qualifications
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. B.Tech Civil (IIT Roorkee)"
+                    value={qualification}
+                    onChange={(e) => setQualification(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                    Years of Experience
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 12+ Years Exp"
+                    value={experience}
+                    onChange={(e) => setExperience(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">Credentials</label>
-                <input
-                  type="text"
-                  placeholder="e.g. M.Tech Civil (IIT Roorkee)"
-                  value={credentials}
-                  onChange={(e) => setCredentials(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
+                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                  Bio / Professional Summary
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  placeholder="e.g. 12+ years executing monolithic raft foundations, non-destructive concrete cube tests, and certified rebar grid placements."
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm leading-relaxed"
                 />
               </div>
 
@@ -3468,10 +3556,10 @@ const TeamEditorView = ({
                   Profile Photo (From Device Gallery)
                 </label>
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-xl overflow-hidden bg-slate-800 shrink-0">
+                  <div className="h-14 w-14 rounded-2xl overflow-hidden bg-slate-800 border-2 border-sky-400/40 shrink-0 shadow-md">
                     <img src={photo} alt="Preview" className="w-full h-full object-cover" />
                   </div>
-                  <label className="px-3 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-700 dark:text-sky-300 text-xs font-mono font-bold cursor-pointer flex items-center gap-1.5">
+                  <label className="px-3.5 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-700 dark:text-sky-300 text-xs font-mono font-bold cursor-pointer flex items-center gap-1.5 transition-all">
                     <Upload className="h-3.5 w-3.5" />
                     <span>Upload Headshot</span>
                     <input type="file" accept="image/*" className="hidden" onChange={handleUploadPhoto} />
@@ -3490,9 +3578,9 @@ const TeamEditorView = ({
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer shadow-lg"
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white font-bold cursor-pointer shadow-lg shadow-sky-500/25"
               >
-                Save Member
+                {editingMember ? "Update Member" : "Save Member"}
               </button>
             </div>
           </form>
