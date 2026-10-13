@@ -1,12 +1,12 @@
 -- =========================================================
 -- INFRA VISION (by ITLC India Pvt Ltd) Production MySQL Database
--- Database: infravision_db
+-- Database: u997632379_infravision_db
 -- Hostinger 1-Click Import Script for phpMyAdmin
 -- Compatible with Hostinger PHP 8.1 / 8.2 / 8.3 & MySQL 8 / MariaDB
 -- =========================================================
 
-CREATE DATABASE IF NOT EXISTS `infravision_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `infravision_db`;
+-- Note for Hostinger phpMyAdmin: Open your database 'u997632379_infravision_db' and click Import.
+
 
 -- 1. Table: Admin Users (Credentials)
 CREATE TABLE IF NOT EXISTS `tbl_admin_users` (

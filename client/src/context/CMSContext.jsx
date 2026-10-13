@@ -1232,13 +1232,12 @@ export const CMSProvider = ({ children }) => {
   const exportDatabaseSQL = () => {
     const sql = `-- =========================================================
 -- INFRA VISION (by ITLC India Pvt Ltd) Production MySQL Database
--- Database: infravision_db
+-- Database: u997632379_infravision_db
 -- Generated: ${new Date().toISOString()}
 -- Compatible with PHP 8.1 / 8.2 / 8.3 & MySQL 8 / MariaDB
 -- =========================================================
 
-CREATE DATABASE IF NOT EXISTS \`infravision_db\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE \`infravision_db\`;
+-- Note: In Hostinger phpMyAdmin, select 'u997632379_infravision_db' and click Import.
 
 -- 1. Table: Admin Users (Cryptographically Hashed)
 DROP TABLE IF EXISTS \`tbl_admin_users\`;

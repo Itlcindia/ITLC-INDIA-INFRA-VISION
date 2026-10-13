@@ -46,11 +46,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// 3. Database Credentials (Prioritizes Environment Variables with Hostinger / Local Fallback)
+// 3. Database Credentials (Hostinger Production: u997632379_infravision_db & Local Dev Fallback)
 $db_host = getenv('DB_HOST') ?: 'localhost';
-$db_name = getenv('DB_NAME') ?: 'infravision_db';
-$db_user = getenv('DB_USER') ?: 'root';
-$db_pass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+$db_name = getenv('DB_NAME') ?: 'u997632379_infravision_db';
+$db_user = getenv('DB_USER') ?: 'u997632379_admin';
+$db_pass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : 'Itlc@121';
 
 try {
     $pdo = new PDO(
@@ -64,14 +64,39 @@ try {
         ]
     );
 } catch (PDOException $e) {
-    // Return sanitized generic error without leaking server paths or credentials
-    http_response_code(500);
-    header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Database connection failed. Please ensure MySQL database is initialized.',
-    ]);
-    exit;
+    // Local dev fallback if running on local XAMPP/WAMP with root and no password
+    $is_local = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1']) || 
+                in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1', 'localhost:5173']);
+    if ($is_local) {
+        try {
+            $pdo = new PDO(
+                "mysql:host=localhost;dbname=infravision_db;charset=utf8mb4",
+                "root",
+                "",
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                ]
+            );
+        } catch (PDOException $localEx) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Database connection failed. Please ensure MySQL is initialized.',
+            ]);
+            exit;
+        }
+    } else {
+        http_response_code(500);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Database connection failed. Please verify Hostinger credentials in api/db.php.',
+        ]);
+        exit;
+    }
 }
 
 // 4. Ensure tbl_sessions table exists for active session validation
