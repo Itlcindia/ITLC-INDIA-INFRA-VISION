@@ -476,14 +476,14 @@ export const CMSProvider = ({ children }) => {
       return {
         username: "admin",
         email: "contact@itlcindia.com",
-        passwordHash: "",
+        passwordHash: hashAdminPassword("password123"),
         password: "••••••••",
       };
     } catch {
       return {
         username: "admin",
         email: "contact@itlcindia.com",
-        passwordHash: "",
+        passwordHash: hashAdminPassword("password123"),
         password: "••••••••",
       };
     }
