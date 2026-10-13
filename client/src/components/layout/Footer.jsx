@@ -9,7 +9,7 @@ import { soundManager } from "../../lib/sound";
 import { useCMS } from "../../context/CMSContext";
 
 export const Footer = ({ onRouteChange }) => {
-  const { homeContent } = useCMS();
+  const { homeContent, services: cmsServices = [] } = useCMS();
   const [copiedEmail, setCopiedEmail] = useState(false);
 
   const officialEmail = homeContent?.officialEmail || "info.itlcindia@gmail.com";
@@ -30,37 +30,45 @@ export const Footer = ({ onRouteChange }) => {
     }
   };
 
-  // 4 Core Architectural Services matching Home screen ServicesSection
-  const services = [
-    { 
-      id: "residential", 
-      title: "Residential Construction", 
-      icon: Home, 
-      desc: "Turnkey luxury villas & estates engineered from ground to key.",
-      route: "services"
-    },
-    { 
-      id: "commercial", 
-      title: "Commercial Construction", 
-      icon: Building2, 
-      desc: "Grade-A corporate hubs & retail architectural landmarks.",
-      route: "services"
-    },
-    { 
-      id: "renovation", 
-      title: "Renovating and Remodelling", 
-      icon: HardHat, 
-      desc: "Surgical retrofitting, structural rebirth & interior overhauls.",
-      route: "services"
-    },
-    { 
-      id: "planning", 
-      title: "Architectural & Space Planning", 
-      icon: Compass, 
-      desc: "3D BIM clash-detection, solar-path & spatial blueprints.",
-      route: "services"
-    },
-  ];
+  // Dynamic Architectural Services from CMS
+  const services = Array.isArray(cmsServices) && cmsServices.length > 0
+    ? cmsServices.slice(0, 4).map((s) => ({
+        id: s.id,
+        title: s.title,
+        icon: s.id === "residential" ? Home : s.id === "commercial" ? Building2 : s.id === "renovation" ? HardHat : Compass,
+        desc: s.tagline || s.paragraph || "Turnkey structural and architectural execution.",
+        route: "services",
+      }))
+    : [
+        { 
+          id: "residential", 
+          title: "Residential Construction", 
+          icon: Home, 
+          desc: "Turnkey luxury villas & estates engineered from ground to key.",
+          route: "services"
+        },
+        { 
+          id: "commercial", 
+          title: "Commercial Construction", 
+          icon: Building2, 
+          desc: "Grade-A corporate hubs & retail architectural landmarks.",
+          route: "services"
+        },
+        { 
+          id: "renovation", 
+          title: "Renovating and Remodelling", 
+          icon: HardHat, 
+          desc: "Surgical retrofitting, structural rebirth & interior overhauls.",
+          route: "services"
+        },
+        { 
+          id: "planning", 
+          title: "Architectural & Space Planning", 
+          icon: Compass, 
+          desc: "3D BIM clash-detection, solar-path & spatial blueprints.",
+          route: "services"
+        },
+      ];
 
   const footerNavLinks = [
     { id: "home", label: "HOME" },

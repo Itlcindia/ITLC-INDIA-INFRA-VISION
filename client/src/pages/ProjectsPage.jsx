@@ -4,9 +4,8 @@ import { ProjectGallery, initialProjects } from "../components/home/ProjectGalle
 import { MagneticButton } from "../components/ui/MagneticButton";
 import { BorderBeam } from "../components/ui/BorderBeam";
 
-export const ProjectsPage = ({ projects = initialProjects, onInquiryClick, initialFilter = "all" }) => {
-  const safeProjects =
-    Array.isArray(projects) && projects.length > 0 ? projects : initialProjects;
+export const ProjectsPage = ({ projects, onInquiryClick, initialFilter = "all" }) => {
+  const safeProjects = Array.isArray(projects) ? projects : initialProjects;
 
   return (
     <div className="pt-28 pb-20 px-4 sm:px-8 max-w-7xl mx-auto space-y-10 sm:space-y-12">

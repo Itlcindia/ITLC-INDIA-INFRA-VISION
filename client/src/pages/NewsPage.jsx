@@ -194,7 +194,7 @@ export const NewsPage = ({ onInquiryClick, initialArticle, onClearInitialArticle
     },
   ];
 
-  const articles = news && news.length > 0 ? news : fallbackArticles;
+  const articles = Array.isArray(news) ? news : fallbackArticles;
 
   const categories = [
     { id: "all", label: "All Intelligence" },
@@ -215,7 +215,7 @@ export const NewsPage = ({ onInquiryClick, initialArticle, onClearInitialArticle
     return matchesCategory && matchesSearch;
   });
 
-  const featured = articles[0];
+  const featured = articles.length > 0 ? articles[0] : null;
 
   const handleShare = (art) => {
     soundManager.playSuccessChime();
@@ -248,6 +248,7 @@ export const NewsPage = ({ onInquiryClick, initialArticle, onClearInitialArticle
       </div>
 
       {/* 2. Spotlight Hero: Featured Article Banner */}
+      {featured && (
       <div className="relative rounded-3xl overflow-hidden bg-white/95 dark:bg-gradient-to-b dark:from-[#0F224D] dark:to-[#091533] border-2 border-slate-200/90 dark:border-sky-400/40 ring-1 ring-slate-200/50 dark:ring-sky-300/20 shadow-xl shadow-blue-900/5 dark:shadow-2xl dark:shadow-black/85 group">
         <BorderBeam size={300} duration={14} colorFrom="#38BDF8" colorTo="#2563EB" />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-center">
@@ -317,6 +318,7 @@ export const NewsPage = ({ onInquiryClick, initialArticle, onClearInitialArticle
           </div>
         </div>
       </div>
+      )}
 
       {/* 3. Search Bar & Category Filter Strip */}
       <div className="space-y-4">
@@ -369,8 +371,19 @@ export const NewsPage = ({ onInquiryClick, initialArticle, onClearInitialArticle
 
       {/* 4. Complete Grid of Articles (With exact cards & images matching home) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-        {filteredArticles.map((item, idx) => (
-          <div key={item.id} className="relative group">
+        {filteredArticles.length === 0 ? (
+          <div className="col-span-full text-center py-16 px-6 rounded-3xl bg-blue-50/50 dark:bg-sky-950/20 border border-dashed border-blue-300 dark:border-sky-500/30">
+            <Newspaper className="w-8 h-8 text-blue-500 dark:text-sky-400 mx-auto mb-2 opacity-70" />
+            <h3 className="font-display text-base font-bold text-slate-800 dark:text-white">
+              No Articles Published Yet
+            </h3>
+            <p className="font-mono text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Publish insights and updates from the Admin Control Center (NEWS & BLOGS).
+            </p>
+          </div>
+        ) : (
+          filteredArticles.map((item, idx) => (
+            <div key={item.id} className="relative group">
             <Card3D className="h-full bg-white/95 dark:bg-gradient-to-b dark:from-[#0F224D] dark:to-[#091533] border border-slate-200/90 dark:border-sky-400/35 hover:border-blue-500/60 dark:hover:border-sky-400/60 ring-1 ring-slate-200/50 dark:ring-sky-300/15 rounded-2xl overflow-hidden p-0 flex flex-col justify-between transition-all duration-300 shadow-xl shadow-blue-900/5 dark:shadow-2xl dark:shadow-black/85">
               <div>
                 {/* Article Image */}
@@ -439,7 +452,8 @@ export const NewsPage = ({ onInquiryClick, initialArticle, onClearInitialArticle
               </div>
             </Card3D>
           </div>
-        ))}
+        ))
+        )}
       </div>
 
       {/* 5. Article Full Read Modal (Matching Screenshot & Landing Page Theme) */}

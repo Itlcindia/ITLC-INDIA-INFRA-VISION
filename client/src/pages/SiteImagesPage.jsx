@@ -129,7 +129,7 @@ export const SiteImagesPage = ({ onInquiryClick, onRouteChange }) => {
   const { siteImages } = useCMS();
   const [activeStage, setActiveStage] = useState("all");
 
-  const currentImages = siteImages && siteImages.length > 0 ? siteImages : siteImagesData;
+  const currentImages = Array.isArray(siteImages) ? siteImages : siteImagesData;
 
   const stages = [
     { id: "all", label: "All Works", count: currentImages.length },
@@ -213,6 +213,17 @@ export const SiteImagesPage = ({ onInquiryClick, onRouteChange }) => {
 
       {/* 3. Pure Image Cards Grid (Stable, High-End Card Motion, Uniform Top-Left Badge, "ON SITE" Bottom-Right) */}
       <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredPhotos.length === 0 ? (
+          <div className="col-span-full text-center py-16 px-6 rounded-3xl bg-blue-50/50 dark:bg-sky-950/20 border border-dashed border-blue-300 dark:border-sky-500/30">
+            <HardHat className="w-8 h-8 text-blue-500 dark:text-sky-400 mx-auto mb-2 opacity-70" />
+            <h3 className="font-display text-base font-bold text-slate-800 dark:text-white">
+              No Site Photos in this Category
+            </h3>
+            <p className="font-mono text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Upload on-site civil media from the Admin Control Center (SITE MEDIA).
+            </p>
+          </div>
+        ) : (
         <AnimatePresence>
           {filteredPhotos.map((photo, index) => (
             <motion.div
@@ -257,6 +268,7 @@ export const SiteImagesPage = ({ onInquiryClick, onRouteChange }) => {
             </motion.div>
           ))}
         </AnimatePresence>
+        )}
       </motion.div>
 
       {/* 4. Cylindrical Consultation Card */}

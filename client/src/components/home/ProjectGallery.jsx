@@ -172,7 +172,7 @@ export const ProjectGallery = ({
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
-  const safeProjects = Array.isArray(projects) && projects.length > 0 ? projects : initialProjects;
+  const safeProjects = Array.isArray(projects) ? projects : initialProjects;
   const filteredProjects = safeProjects.filter((p) => {
     if (filter === "all") return true;
     return p.category === filter;

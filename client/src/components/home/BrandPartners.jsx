@@ -157,7 +157,7 @@ export const BrandPartners = () => {
 
   // Partners array with staggered float delays for visible wave effect
   const rawList =
-    brandPartners && brandPartners.length > 0
+    Array.isArray(brandPartners)
       ? brandPartners
       : [
           { id: "tata", name: "TATA Steel", preset: "tata" },
@@ -166,6 +166,8 @@ export const BrandPartners = () => {
           { id: "jcb", name: "JCB Earthmoving", preset: "jcb" },
           { id: "ultratech", name: "UltraTech Cement", preset: "ultratech" },
         ];
+
+  if (rawList.length === 0) return null;
 
   const brandList = rawList.map((p, idx) => ({
     id: p.id || `partner-${idx}`,

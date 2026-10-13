@@ -19,7 +19,7 @@ export const InteriorPage = ({ onInquiryClick }) => {
   const [inspectItem, setInspectItem] = useState(null);
   const [filter, setFilter] = useState("all");
 
-  const activeSpaces = interior && interior.length > 0 ? interior : allInteriorSpaces;
+  const activeSpaces = Array.isArray(interior) ? interior : allInteriorSpaces;
 
   const filterCategories = [
     { id: "all", label: `All Spaces (${activeSpaces.length})` },
@@ -100,7 +100,7 @@ export const InteriorPage = ({ onInquiryClick }) => {
               VERIFIED SPACES EXHIBITION
             </span>
             <h2 className="font-display text-[26px] sm:text-[30px] font-bold text-slate-900 dark:text-white uppercase">
-              All 9 Curated Spaces
+              Curated Interior Spaces ({activeSpaces.length})
             </h2>
           </div>
 
@@ -125,9 +125,20 @@ export const InteriorPage = ({ onInquiryClick }) => {
           </div>
         </div>
 
-        {/* 9 Spaces Cards Grid */}
+        {/* Spaces Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {filteredSpaces.map((item) => (
+          {filteredSpaces.length === 0 ? (
+            <div className="col-span-full text-center py-16 px-6 rounded-3xl bg-blue-50/50 dark:bg-sky-950/20 border border-dashed border-blue-300 dark:border-sky-500/30">
+              <Layers className="w-8 h-8 text-blue-500 dark:text-sky-400 mx-auto mb-2 opacity-70" />
+              <h3 className="font-display text-base font-bold text-slate-800 dark:text-white">
+                No Interior Spaces in this Category
+              </h3>
+              <p className="font-mono text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Add or manage interior rooms from the Admin Control Center (INTERIOR).
+              </p>
+            </div>
+          ) : (
+            filteredSpaces.map((item) => (
             <div
               key={item.id}
               onClick={() => handleOpenLightbox(item)}
@@ -171,8 +182,9 @@ export const InteriorPage = ({ onInquiryClick }) => {
                 </p>
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        )}
+      </div>
       </div>
 
       {/* 4. EXECUTION METHODOLOGY */}

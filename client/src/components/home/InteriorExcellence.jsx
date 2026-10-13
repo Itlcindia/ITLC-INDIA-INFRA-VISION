@@ -80,8 +80,7 @@ export const allInteriorSpaces = [
 
 export const InteriorExcellence = ({ onInquiryClick, onExploreMore }) => {
   const { interior } = useCMS();
-  // Use all curated interior spaces from CMSContext to create a continuous 3D Depth Carousel
-  const displaySpaces = interior && interior.length > 0 ? interior : allInteriorSpaces;
+  const displaySpaces = Array.isArray(interior) ? interior : allInteriorSpaces;
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);

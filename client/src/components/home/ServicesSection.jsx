@@ -43,13 +43,10 @@ const DEFAULT_SERVICES = [
 ];
 
 export const ServicesSection = ({ onInquiryClick, onViewAll, dynamicServices }) => {
-  // Always guarantee exactly 4 cards on home page with Card 4 pinned and immutable
-  const displayedServices = [
-    (dynamicServices && dynamicServices[0]) || DEFAULT_SERVICES[0],
-    (dynamicServices && dynamicServices[1]) || DEFAULT_SERVICES[1],
-    (dynamicServices && dynamicServices[2]) || DEFAULT_SERVICES[2],
-    HARDLOCKED_CARD_4, // Enforced fixed position and protected image
-  ];
+  // Use live dynamic services from CMS with fallback
+  const displayedServices = Array.isArray(dynamicServices) && dynamicServices.length > 0
+    ? dynamicServices.slice(0, 4)
+    : DEFAULT_SERVICES;
 
   return (
     <section id="services" className="relative w-full py-14 sm:py-20 bg-gradient-to-b from-slate-50/60 via-white to-slate-50/40 dark:from-[#061026] dark:via-[#07132B] dark:to-[#061026] transition-colors duration-300">
@@ -86,7 +83,7 @@ export const ServicesSection = ({ onInquiryClick, onViewAll, dynamicServices }) 
               {/* Inner Concentric Image Capsule (Height completely preserved as requested) */}
               <div className="relative w-full aspect-[4/3] sm:h-[225px] overflow-hidden rounded-[20px] sm:rounded-[22px] bg-slate-100 dark:bg-slate-800 shrink-0">
                 <img
-                  src={srv.image}
+                  src={srv.image || "/images/services/card_residential.jpg"}
                   alt={srv.title}
                   className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
                   loading="lazy"
@@ -94,7 +91,7 @@ export const ServicesSection = ({ onInquiryClick, onViewAll, dynamicServices }) 
 
                 {/* Top-Left Floating Badge Only (No Numbering) */}
                 <div className="absolute top-3 left-3 z-10 inline-flex items-center px-3 py-0.5 rounded-full bg-white/95 dark:bg-slate-900/90 shadow-md backdrop-blur-md border border-slate-200/70 dark:border-sky-400/35 text-[11px] font-semibold text-slate-800 dark:text-sky-300 font-mono tracking-wide">
-                  {srv.badge}
+                  {srv.badge || "Certified Standard"}
                 </div>
               </div>
 
@@ -104,7 +101,7 @@ export const ServicesSection = ({ onInquiryClick, onViewAll, dynamicServices }) 
                   {srv.title}
                 </h3>
                 <p className="text-[12.5px] sm:text-[13px] text-slate-600 dark:text-slate-300 leading-snug sm:leading-normal mt-1.5 font-sans line-clamp-3">
-                  {srv.paragraph}
+                  {srv.paragraph || srv.tagline || ""}
                 </p>
 
                 {/* Inquire Action Line: Snugly attached directly under paragraph with zero dead space */}
