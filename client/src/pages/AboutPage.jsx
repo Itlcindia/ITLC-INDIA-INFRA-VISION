@@ -279,10 +279,10 @@ export const AboutPage = ({ onInquiryClick }) => {
               return (
                 <div
                   key={member.id || idx}
-                  className="group relative rounded-3xl bg-white/95 dark:bg-gradient-to-b dark:from-[#0B1A3C] dark:via-[#07132F] dark:to-[#040C20] border border-slate-200 dark:border-sky-400/25 hover:border-sky-400/60 dark:hover:border-sky-400/80 shadow-xl hover:shadow-2xl hover:shadow-sky-500/10 transition-all duration-500 flex flex-col justify-between overflow-hidden"
+                  className="group relative rounded-3xl bg-white/95 dark:bg-gradient-to-b dark:from-[#0B1A3C] dark:via-[#07132F] dark:to-[#040C20] border border-slate-200 dark:border-sky-400/25 hover:border-sky-400/60 dark:hover:border-sky-400/80 shadow-xl hover:shadow-2xl hover:shadow-sky-500/10 transition-all duration-500 flex flex-col justify-between overflow-hidden p-2.5 sm:p-3"
                 >
-                  {/* Portrait Area with Editorial Grayscale-to-Color Transition */}
-                  <div className="relative h-[340px] sm:h-[370px] w-full overflow-hidden bg-slate-900 shrink-0">
+                  {/* Nested Image Frame (Inner Card Effect with subtle margin & border) */}
+                  <div className="relative h-[255px] sm:h-[285px] w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200/90 dark:border-sky-400/40 shadow-md ring-1 ring-black/5 dark:ring-sky-300/10 shrink-0">
                     <img
                       src={memberImg}
                       alt={member.name}
@@ -294,45 +294,45 @@ export const AboutPage = ({ onInquiryClick }) => {
                     <div className="absolute inset-0 bg-gradient-to-t from-[#040C20] via-[#040C20]/40 to-transparent opacity-90 group-hover:opacity-75 transition-opacity duration-500" />
 
                     {/* Top floating pill tags */}
-                    <div className="absolute top-4 inset-x-4 flex items-center justify-between z-10 gap-2">
-                      <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-sky-300 font-mono text-[10px] font-bold tracking-wider uppercase truncate">
+                    <div className="absolute top-3 inset-x-3 flex items-center justify-between z-10 gap-2">
+                      <span className="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-sky-300 font-mono text-[9.5px] font-bold tracking-wider uppercase truncate">
                         {tagText}
                       </span>
-                      <span className="px-3 py-1 rounded-full bg-blue-600/80 backdrop-blur-md border border-sky-300/30 text-white font-mono text-[10px] font-bold shrink-0">
+                      <span className="px-2.5 py-0.5 rounded-full bg-blue-600/80 backdrop-blur-md border border-sky-300/30 text-white font-mono text-[9.5px] font-bold shrink-0">
                         {expText}
                       </span>
                     </div>
 
                     {/* Bottom identity overlaid on photo */}
-                    <div className="absolute bottom-4 inset-x-5 z-10 space-y-1">
+                    <div className="absolute bottom-3 inset-x-3.5 z-10 space-y-0.5">
                       <div className="flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
-                        <span className="text-[10px] font-mono font-bold tracking-widest text-sky-300 uppercase">
+                        <span className="text-[9px] font-mono font-bold tracking-widest text-sky-300 uppercase">
                           OFFICIAL SPECIALIST
                         </span>
                       </div>
-                      <h3 className="font-display text-xl sm:text-2xl font-bold text-white tracking-tight leading-tight group-hover:text-sky-300 transition-colors">
+                      <h3 className="font-display text-lg sm:text-xl font-bold text-white tracking-tight leading-tight group-hover:text-sky-300 transition-colors">
                         {member.name}
                       </h3>
-                      <p className="font-mono text-xs text-slate-300 font-medium truncate">
+                      <p className="font-mono text-[11px] text-slate-300 font-medium truncate">
                         {roleText}
                       </p>
                     </div>
                   </div>
 
                   {/* Lower Excerpt & View More Trigger */}
-                  <div className="p-5 sm:p-6 space-y-4 flex flex-col justify-between flex-1 bg-white/70 dark:bg-transparent">
+                  <div className="pt-3.5 pb-1 px-1.5 space-y-3 flex flex-col justify-between flex-1">
                     {/* Short Bio preview */}
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-sans line-clamp-2 leading-relaxed">
+                    <p className="text-[11.5px] sm:text-xs text-slate-600 dark:text-gray-300 font-sans line-clamp-2 leading-relaxed">
                       {member.bio || member.viewMoreText || "Key contributor to INFRA VISION's architectural engineering leadership."}
                     </p>
 
                     {/* Specialization Tags */}
-                    <div className="flex flex-wrap gap-1.5 pt-1">
+                    <div className="flex flex-wrap gap-1.5 pt-0.5">
                       {specsList.slice(0, 3).map((spec, sIdx) => (
                         <span
                           key={sIdx}
-                          className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-sky-500/10 border border-blue-200/60 dark:border-sky-400/20 text-blue-700 dark:text-sky-300 font-mono text-[10px] font-semibold truncate"
+                          className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-sky-500/10 border border-blue-200/60 dark:border-sky-400/20 text-blue-700 dark:text-sky-300 font-mono text-[9.5px] font-semibold truncate"
                         >
                           {spec}
                         </span>
@@ -346,10 +346,10 @@ export const AboutPage = ({ onInquiryClick }) => {
                           soundManager?.playHapticClick?.(600);
                           setSelectedMemberForModal(member);
                         }}
-                        className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-blue-600 dark:bg-sky-500/10 dark:hover:bg-gradient-to-r dark:hover:from-blue-600 dark:hover:to-sky-500 border border-slate-200 dark:border-sky-400/30 text-slate-800 dark:text-sky-300 hover:text-white dark:hover:text-white font-mono text-xs font-bold tracking-wider uppercase flex items-center justify-between transition-all duration-300 group/btn cursor-pointer shadow-sm hover:shadow-lg hover:shadow-sky-500/25"
+                        className="w-full py-2 px-3.5 rounded-xl bg-slate-100 hover:bg-blue-600 dark:bg-sky-500/10 dark:hover:bg-gradient-to-r dark:hover:from-blue-600 dark:hover:to-sky-500 border border-slate-200 dark:border-sky-400/30 text-slate-800 dark:text-sky-300 hover:text-white dark:hover:text-white font-mono text-[11px] font-bold tracking-wider uppercase flex items-center justify-between transition-all duration-300 group/btn cursor-pointer shadow-sm hover:shadow-lg hover:shadow-sky-500/25"
                       >
                         <span>View Dossier & Bio</span>
-                        <ArrowUpRight className="w-4 h-4 text-slate-500 dark:text-sky-400 group-hover/btn:text-white group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-slate-500 dark:text-sky-400 group-hover/btn:text-white group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                       </button>
                     </div>
                   </div>
