@@ -69,16 +69,16 @@ export const Navbar = ({ activeRoute, onRouteChange, onInquiryClick }) => {
           {/* Brand Logo */}
           <button
             onClick={() => handleNavClick("home")}
-            className="flex items-center gap-2.5 sm:gap-3 text-left cursor-pointer focus:outline-none shrink-0"
+            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer focus:outline-none shrink-0"
           >
             <img
               src="/images/company_logo.png"
               alt="ITLC India Pvt Ltd"
               className="h-12 sm:h-[50px] w-auto object-contain shrink-0 drop-shadow-sm"
             />
-            <div className="flex flex-col justify-center">
+            <div className="flex flex-col items-center justify-center text-center">
               <span
-                className={`font-display text-base sm:text-lg font-bold tracking-wider leading-none transition-colors duration-300 ${
+                className={`font-display text-base sm:text-lg font-bold tracking-wider leading-none text-center transition-colors duration-300 ${
                   isHeroTransparent
                     ? "text-white drop-shadow-md"
                     : "text-slate-900 dark:text-white"
@@ -87,13 +87,13 @@ export const Navbar = ({ activeRoute, onRouteChange, onInquiryClick }) => {
                 INFRA<span className="text-blue-500 dark:text-sky-400">VISION</span>
               </span>
               <span
-                className={`font-mono text-[8px] sm:text-[9px] tracking-wider uppercase font-semibold -mt-0.5 leading-none transition-colors duration-300 ${
+                className={`font-sans text-[7.5px] sm:text-[8px] uppercase font-semibold tracking-wide mt-0.5 leading-none text-center whitespace-nowrap transition-colors duration-300 ${
                   isHeroTransparent
                     ? "text-sky-200 drop-shadow-sm"
                     : "text-slate-600 dark:text-sky-200/80"
                 }`}
               >
-                ITLC INDIA PVT LIMITED
+                ITLC INDIA PVT LTD
               </span>
             </div>
           </button>

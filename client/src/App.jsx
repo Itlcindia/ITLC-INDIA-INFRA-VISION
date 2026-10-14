@@ -188,8 +188,8 @@ export function App() {
       {/* 1. CAD HUD Preloader */}
       {loading && <Preloader onComplete={() => setLoading(false)} />}
 
-      {/* 2. Floating Glass Navbar (Hidden on Admin page for full-screen dashboard) */}
-      {activeRoute !== "admin" && (
+      {/* 2. Floating Glass Navbar (Hidden on Admin page & while Preloader is active) */}
+      {!loading && activeRoute !== "admin" && (
         <Navbar
           activeRoute={activeRoute}
           onRouteChange={handleRouteChange}
