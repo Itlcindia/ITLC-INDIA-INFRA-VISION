@@ -279,10 +279,10 @@ export const AboutPage = ({ onInquiryClick }) => {
               return (
                 <div
                   key={member.id || idx}
-                  className="group relative rounded-3xl bg-white/95 dark:bg-gradient-to-b dark:from-[#0B1A3C] dark:via-[#07132F] dark:to-[#040C20] border border-slate-200 dark:border-sky-400/25 hover:border-sky-400/60 dark:hover:border-sky-400/80 shadow-xl hover:shadow-2xl hover:shadow-sky-500/10 transition-all duration-500 flex flex-col justify-between overflow-hidden p-2.5 sm:p-3"
+                  className="group relative rounded-3xl bg-white/95 dark:bg-gradient-to-b dark:from-[#0B1A3C] dark:via-[#07132F] dark:to-[#040C20] border border-slate-200 dark:border-sky-400/25 hover:border-sky-400/60 dark:hover:border-sky-400/80 shadow-xl hover:shadow-2xl hover:shadow-sky-500/10 transition-all duration-500 flex flex-col justify-between overflow-hidden p-1.5 sm:p-2"
                 >
-                  {/* Nested Image Frame (Inner Card Effect with subtle margin & border) */}
-                  <div className="relative h-[255px] sm:h-[285px] w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200/90 dark:border-sky-400/40 shadow-md ring-1 ring-black/5 dark:ring-sky-300/10 shrink-0">
+                  {/* Nested Image Frame (Expanded Width/Height with Ultra-Slim Hairline Gap) */}
+                  <div className="relative h-[290px] sm:h-[320px] w-full rounded-[20px] overflow-hidden bg-slate-900 border border-slate-200/90 dark:border-sky-400/40 shadow-md ring-1 ring-black/5 dark:ring-sky-300/10 shrink-0">
                     <img
                       src={memberImg}
                       alt={member.name}
@@ -321,7 +321,7 @@ export const AboutPage = ({ onInquiryClick }) => {
                   </div>
 
                   {/* Lower Excerpt & View More Trigger */}
-                  <div className="pt-3.5 pb-1 px-1.5 space-y-3 flex flex-col justify-between flex-1">
+                  <div className="pt-3.5 pb-1.5 px-2.5 space-y-3 flex flex-col justify-between flex-1">
                     {/* Short Bio preview */}
                     <p className="text-[11.5px] sm:text-xs text-slate-600 dark:text-gray-300 font-sans line-clamp-2 leading-relaxed">
                       {member.bio || member.viewMoreText || "Key contributor to INFRA VISION's architectural engineering leadership."}
