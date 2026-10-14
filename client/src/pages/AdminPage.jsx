@@ -3327,6 +3327,9 @@ const TeamEditorView = ({
   const [qualification, setQualification] = useState("");
   const [experience, setExperience] = useState("");
   const [bio, setBio] = useState("");
+  const [viewMoreText, setViewMoreText] = useState("");
+  const [specs, setSpecs] = useState("");
+  const [linkedin, setLinkedin] = useState("");
   const [photo, setPhoto] = useState("https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
 
   const handleOpenAddMember = () => {
@@ -3336,6 +3339,9 @@ const TeamEditorView = ({
     setQualification("B.Tech Civil");
     setExperience("10+ Years Exp");
     setBio("Key contributor to INFRA VISION's architectural engineering leadership.");
+    setViewMoreText("Detailed executive narrative, landmark project milestones, engineering certifications, and design philosophies that display when visitors click 'View More / View Dossier' on the public website.");
+    setSpecs("Certified Lead, Site Supervision, Grade-A Execution");
+    setLinkedin("");
     setPhoto("https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
     setShowAddMember(true);
   };
@@ -3347,6 +3353,9 @@ const TeamEditorView = ({
     setQualification(m.qualification || m.credentials || "B.Tech Civil");
     setExperience(m.experience || "10+ Years Exp");
     setBio(m.bio || "Key contributor to INFRA VISION's architectural engineering leadership.");
+    setViewMoreText(m.viewMoreText || m.bio || "");
+    setSpecs(Array.isArray(m.specs) ? m.specs.join(", ") : (m.specs || "Certified Lead, Site Supervision, Grade-A Execution"));
+    setLinkedin(m.linkedin || "");
     setPhoto(m.photo || m.image || "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
     setShowAddMember(true);
   };
@@ -3366,6 +3375,10 @@ const TeamEditorView = ({
   const handleMemberSubmit = (e) => {
     e.preventDefault();
     const cleanQual = qualification.trim() || "B.Tech Civil";
+    const cleanBio = bio.trim() || "Key contributor to INFRA VISION's architectural engineering leadership.";
+    const cleanViewMore = viewMoreText.trim() || cleanBio;
+    const parsedSpecs = specs.split(",").map((s) => s.trim()).filter(Boolean);
+
     const memberData = {
       id: editingMember ? editingMember.id : Date.now(),
       name: name.trim(),
@@ -3373,7 +3386,10 @@ const TeamEditorView = ({
       qualification: cleanQual,
       credentials: cleanQual, // backwards-compatibility alias
       experience: experience.trim() || "10+ Years Exp",
-      bio: bio.trim() || "Key contributor to INFRA VISION's architectural engineering leadership.",
+      bio: cleanBio,
+      viewMoreText: cleanViewMore,
+      specs: parsedSpecs.length > 0 ? parsedSpecs : ["Certified Lead", "Site Supervision", "Grade-A Execution"],
+      linkedin: linkedin.trim(),
       photo: photo || "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop",
     };
 
@@ -3390,18 +3406,18 @@ const TeamEditorView = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between border-b border-sky-400/20 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sky-400/20 pb-4">
         <div>
           <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white">
             My Team <span className="text-sky-500 dark:text-sky-400">Leadership Roster</span>
           </h3>
           <p className="text-xs font-mono text-slate-600 dark:text-slate-400">
-            Manage principal architects, site supervisors, qualifications, experience, and headshots directly from your device gallery.
+            Manage architects, engineers, qualifications, experience, and the full "View More" dossier story displayed on the public site.
           </p>
         </div>
         <button
           onClick={handleOpenAddMember}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 text-white font-mono text-xs font-bold flex items-center gap-2 cursor-pointer shadow-lg shadow-sky-500/25"
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 text-white font-mono text-xs font-bold flex items-center gap-2 cursor-pointer shadow-lg shadow-sky-500/25 shrink-0"
         >
           <Plus className="h-4 w-4" />
           <span>Add Team Member</span>
@@ -3415,12 +3431,13 @@ const TeamEditorView = ({
             className="p-5 rounded-2xl bg-white dark:bg-gradient-to-b dark:from-[#0F224D] dark:to-[#091533] border-2 border-sky-400/50 hover:border-sky-500 dark:hover:border-sky-400 ring-1 ring-sky-300/25 shadow-xl shadow-slate-200/50 dark:shadow-black/80 transition-all space-y-3 flex flex-col justify-between"
           >
             <div className="space-y-3">
-              <div className="h-28 w-28 rounded-2xl overflow-hidden border-2 border-sky-400/40 mx-auto bg-slate-100 dark:bg-slate-800 shadow-md">
-                <img src={m.photo || m.image} alt={m.name} className="w-full h-full object-cover" />
+              <div className="h-32 w-28 rounded-2xl overflow-hidden border-2 border-sky-400/40 mx-auto bg-slate-100 dark:bg-slate-800 shadow-md">
+                <img src={m.photo || m.image} alt={m.name} className="w-full h-full object-cover object-top" />
               </div>
               <div className="text-center space-y-1">
                 <h4 className="font-display text-base font-bold text-slate-900 dark:text-white">{m.name}</h4>
                 <p className="text-xs font-mono text-sky-600 dark:text-sky-400 font-semibold">{m.role}</p>
+                
                 <div className="flex items-center justify-center gap-1.5 flex-wrap pt-0.5">
                   <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-sky-300 font-mono text-[10px] font-bold border border-blue-400/30">
                     {m.qualification || m.credentials || "B.Tech Civil"}
@@ -3429,19 +3446,32 @@ const TeamEditorView = ({
                     {m.experience || "10+ Years Exp"}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-600 dark:text-slate-300 font-sans line-clamp-2 pt-1 leading-relaxed text-left bg-slate-50 dark:bg-black/20 p-2 rounded-xl border border-slate-200/60 dark:border-white/5">
-                  {m.bio || "Key contributor to INFRA VISION's architectural engineering leadership."}
-                </p>
+
+                <div className="text-left bg-slate-50 dark:bg-black/20 p-2.5 rounded-xl border border-slate-200/60 dark:border-white/5 space-y-1 mt-2">
+                  <p className="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase">
+                    Card Summary:
+                  </p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 font-sans line-clamp-2 leading-relaxed">
+                    {m.bio || "Key contributor to INFRA VISION's architectural engineering leadership."}
+                  </p>
+
+                  <div className="pt-1 flex items-center justify-between text-[9px] font-mono text-sky-600 dark:text-sky-400">
+                    <span>View More Narrative:</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                      {m.viewMoreText ? "✓ Configured" : "• Uses Default"}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="pt-3 border-t border-sky-400/15 flex items-center justify-between">
               <button
                 onClick={() => handleOpenEditMember(m)}
-                className="text-xs font-mono text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 flex items-center gap-1 cursor-pointer"
+                className="text-xs font-mono text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 flex items-center gap-1 cursor-pointer font-bold"
               >
                 <Edit3 className="h-3.5 w-3.5" />
-                <span>Edit</span>
+                <span>Edit Details</span>
               </button>
 
               <button
@@ -3466,18 +3496,23 @@ const TeamEditorView = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <form
             onSubmit={handleMemberSubmit}
-            className="w-full max-w-lg p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#081534] border-2 border-sky-400 ring-1 ring-sky-300/30 shadow-2xl text-slate-900 dark:text-white space-y-4 font-mono text-xs max-h-[90vh] overflow-y-auto no-scrollbar"
+            className="w-full max-w-xl p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#081534] border-2 border-sky-400 ring-1 ring-sky-300/30 shadow-2xl text-slate-900 dark:text-white space-y-4 font-mono text-xs max-h-[92vh] overflow-y-auto no-scrollbar"
           >
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-sky-400/20 pb-3">
-              <h4 className="font-display text-lg font-bold text-slate-900 dark:text-white">
-                {editingMember ? "Edit Team Member" : "Add Team Member"}
-              </h4>
-              <button onClick={() => setShowAddMember(false)} type="button" className="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
+              <div>
+                <h4 className="font-display text-lg font-bold text-slate-900 dark:text-white">
+                  {editingMember ? "Edit Team Member" : "Add Team Member"}
+                </h4>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-sans">
+                  Configure card details and the full "View More" dossier story.
+                </p>
+              </div>
+              <button onClick={() => setShowAddMember(false)} type="button" className="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer p-1">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="space-y-3 font-sans">
+            <div className="space-y-3.5 font-sans">
               <div>
                 <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
                   Full Name
@@ -3536,17 +3571,65 @@ const TeamEditorView = ({
                 </div>
               </div>
 
+              {/* Short Bio for Card Preview */}
               <div>
                 <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
-                  Bio / Professional Summary
+                  Short Summary (Shown on Card Preview)
                 </label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   required
-                  placeholder="e.g. 12+ years executing monolithic raft foundations, non-destructive concrete cube tests, and certified rebar grid placements."
+                  placeholder="e.g. 12+ years executing monolithic raft foundations and certified rebar grid placements."
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm leading-relaxed"
+                />
+              </div>
+
+              {/* View More Full Narrative */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-sky-700 dark:text-sky-300 font-mono text-xs uppercase font-bold">
+                    "View More" Dossier Narrative (Full In-Depth Story)
+                  </label>
+                  <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                    Shown when visitor taps "View Dossier"
+                  </span>
+                </div>
+                <textarea
+                  rows={4}
+                  placeholder="Detailed career history, landmark projects, architectural philosophies, awards, or milestone accomplishments..."
+                  value={viewMoreText}
+                  onChange={(e) => setViewMoreText(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#040C20] border-2 border-sky-400/50 text-slate-900 dark:text-white text-sm leading-relaxed"
+                />
+              </div>
+
+              {/* Competencies / Certified Skills */}
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                  Key Specializations (Comma Separated)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Seismic Zone 3 Audits, 3D BIM Clash-Free, TATA Tiscon FE-550D"
+                  value={specs}
+                  onChange={(e) => setSpecs(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
+                />
+              </div>
+
+              {/* LinkedIn URL */}
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                  LinkedIn Profile URL (Optional)
+                </label>
+                <input
+                  type="url"
+                  placeholder="e.g. https://www.linkedin.com/in/username"
+                  value={linkedin}
+                  onChange={(e) => setLinkedin(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
                 />
               </div>
 
@@ -3556,11 +3639,11 @@ const TeamEditorView = ({
                   Profile Photo (From Device Gallery)
                 </label>
                 <div className="flex items-center gap-3">
-                  <div className="h-14 w-14 rounded-2xl overflow-hidden bg-slate-800 border-2 border-sky-400/40 shrink-0 shadow-md">
-                    <img src={photo} alt="Preview" className="w-full h-full object-cover" />
+                  <div className="h-16 w-14 rounded-2xl overflow-hidden bg-slate-800 border-2 border-sky-400/40 shrink-0 shadow-md">
+                    <img src={photo} alt="Preview" className="w-full h-full object-cover object-top" />
                   </div>
-                  <label className="px-3.5 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-700 dark:text-sky-300 text-xs font-mono font-bold cursor-pointer flex items-center gap-1.5 transition-all">
-                    <Upload className="h-3.5 w-3.5" />
+                  <label className="px-3.5 py-2.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-700 dark:text-sky-300 text-xs font-mono font-bold cursor-pointer flex items-center gap-2 transition-all">
+                    <Upload className="h-4 w-4" />
                     <span>Upload Headshot</span>
                     <input type="file" accept="image/*" className="hidden" onChange={handleUploadPhoto} />
                   </label>
@@ -3572,7 +3655,7 @@ const TeamEditorView = ({
               <button
                 type="button"
                 onClick={() => setShowAddMember(false)}
-                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white cursor-pointer font-bold"
               >
                 Cancel
               </button>

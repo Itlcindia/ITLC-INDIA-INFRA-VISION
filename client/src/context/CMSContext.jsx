@@ -102,15 +102,18 @@ const defaultTeam = [
     name: "Ar. Ananya Sharma",
     role: "Lead Interior Architect & Spatial Stylist",
     experience: "8+ Years Exp",
+    qualification: "B.Arch (SPA Delhi), LEED AP",
     credentials: "B.Arch (SPA Delhi), LEED AP",
     photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
     bio: "8+ years specializing in luxury bespoke residences, bookmatched Italian Calacatta marble curation, automated circadian lighting layouts, and acoustic spatial serenity across Lucknow.",
+    viewMoreText: "Ar. Ananya Sharma is a principal spatial architect at INFRA VISION, pioneering luxury interior architecture with a focus on biophilic flow and museum-grade finishes.\n\nGraduating with honors from SPA Delhi, she has spearheaded over 65 ultra-luxury turnkey residential projects across Gomti Nagar and Shaheed Path. Her signature methodology combines natural cross-ventilation, imported marble curation from Carrara, and bespoke smart automation systems that synchronize interior circadian lighting with daily solar rhythms.",
     specs: [
       "65+ Luxury Villas Styled",
       "Italian Stone Curation",
       "3D BIM Clash-Free",
       "Circadian Light Flow"
     ],
+    linkedin: "https://www.linkedin.com",
     signature: "Ar. Ananya Sharma ~"
   },
   {
@@ -122,15 +125,18 @@ const defaultTeam = [
     name: "Er. Rajesh Verma",
     role: "Chief Structural & Civil Site Engineer",
     experience: "12+ Years Exp",
+    qualification: "M.Tech Civil (IIT Roorkee), IS-456 Auditor",
     credentials: "M.Tech Civil (IIT Roorkee), IS-456 Auditor",
     photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop",
     bio: "12+ years executing monolithic raft foundations, non-destructive concrete cube tests, and certified TATA Tiscon FE-550D rebar grid placements under strict OSHA zero-incident safety.",
+    viewMoreText: "Er. Rajesh Verma directs INFRA VISION's civil execution cadre with over twelve years of certified structural engineering mastery.\n\nWith an M.Tech in Structural Dynamics from IIT Roorkee, Er. Verma enforces stringent IS-456 compliance, non-destructive ultrasonic rebar audits, and earthquake-resistant raft foundation casting. Under his technical oversight, more than 80 flagship structures have achieved flawless zero-incident safety ratings and grade-A monolithic structural integrity.",
     specs: [
       "80+ Landmark Sites Cast",
       "Seismic Zone 3 Audits",
       "Drone Telemetry Lead",
       "OSHA Zero-Incident"
     ],
+    linkedin: "https://www.linkedin.com",
     signature: "Er. Rajesh Verma ~"
   },
   {
@@ -142,15 +148,18 @@ const defaultTeam = [
     name: "Er. Sameer Khan",
     role: "Senior MEP & 3D BIM Director",
     experience: "9+ Years Exp",
+    qualification: "B.Tech Mechanical, BIM Level 3",
     credentials: "B.Tech Mechanical, BIM Level 3",
     photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop",
     bio: "9+ years coordinating micro-millimeter 3D BIM clash-detection, automated HVAC ducting, acoustic conduit isolation, and LEED-compliant energy management grids with zero site delays.",
+    viewMoreText: "Er. Sameer Khan pioneers INFRA VISION's Digital Twin and Mechanical-Electrical-Plumbing (MEP) infrastructure.\n\nCertified as an Autodesk BIM Level 3 Specialist, Sameer models every conduit, structural column, VRV cooling layout, and rainwater harvesting pipeline in millimeter-accurate 3D coordinate space before ground is broken. This digital-first engineering eliminates on-site rework, reduces HVAC energy footprints by up to 28%, and guarantees lifelong operational efficiency.",
     specs: [
       "70+ Turnkey Milestones",
       "Micro-Clash Resolution",
       "Concealed MEP Grids",
       "LEED Energy Standards"
     ],
+    linkedin: "https://www.linkedin.com",
     signature: "Er. Sameer Khan ~"
   }
 ];

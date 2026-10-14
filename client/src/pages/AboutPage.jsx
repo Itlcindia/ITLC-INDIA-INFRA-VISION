@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { 
   Wrench, 
@@ -12,7 +12,12 @@ import {
   Palette,
   HardHat,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ArrowUpRight,
+  ExternalLink,
+  X,
+  Award,
+  Sparkles
 } from "lucide-react";
 import { Card3D } from "../components/ui/Card3D";
 import { BorderBeam } from "../components/ui/BorderBeam";
@@ -22,18 +27,7 @@ import { useCMS } from "../context/CMSContext";
 
 export const AboutPage = ({ onInquiryClick }) => {
   const { team = [], aboutContent = {} } = useCMS();
-  const [openCards, setOpenCards] = useState({});
-  const scrollTrackRef = useRef(null);
-
-  const toggleCard = (index) => {
-    soundManager?.playHapticClick?.(600);
-    setOpenCards(prev => ({ ...prev, [index]: !prev[index] }));
-  };
-
-  const scrollTrack = (offset) => {
-    soundManager?.playHapticClick?.(450);
-    scrollTrackRef.current?.scrollBy({ left: offset, behavior: "smooth" });
-  };
+  const [selectedMemberForModal, setSelectedMemberForModal] = useState(null);
 
   const teamMembers = Array.isArray(team) ? team : [];
 
@@ -239,50 +233,28 @@ export const AboutPage = ({ onInquiryClick }) => {
         </div>
       </div>
 
-      {/* 4. ELITE ENGINEERING & DESIGN LEADERSHIP (MY TEAM SCROLLABLE CARDS) */}
+      {/* 4. ELITE ENGINEERING & DESIGN LEADERSHIP (MODERN EDITORIAL SHOWCASE) */}
       <div id="my-team" className="space-y-8 scroll-mt-28">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div className="space-y-2 text-center sm:text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 dark:bg-sky-400/10 border border-blue-400/30 text-blue-600 dark:text-sky-300 text-xs font-mono font-semibold">
               <Users className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
-              <span>MY TEAM • LEADERSHIP</span>
+              <span>LEADERSHIP & ARCHITECTURAL CADRE</span>
             </div>
-            <h2 className="font-display text-[26px] sm:text-[31px] font-bold tracking-tight text-slate-900 dark:text-white">
-              Elite Engineering & <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:from-sky-400 dark:to-blue-500">Design Leadership</span>
+            <h2 className="font-display text-[26px] sm:text-[32px] font-bold tracking-tight text-slate-900 dark:text-white">
+              Architects of Legacy, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-500 dark:from-sky-400 dark:via-blue-400 dark:to-cyan-300">Masters of Civil Execution</span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-sans max-w-xl">
-              Tap the circular badge to unfurl each specialist's verified architectural dossier.
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-sans max-w-2xl">
+              A multidisciplinary leadership team bridging architectural imagination with IS-456 structural durability. Tap "View Dossier" to explore each specialist's full background.
             </p>
-          </div>
-
-          {/* Left/Right Horizontal Scroll Navigation Buttons */}
-          <div className="flex items-center justify-center sm:justify-end gap-2.5 shrink-0">
-            <button
-              onClick={() => scrollTrack(-360)}
-              aria-label="Scroll team left"
-              className="p-2.5 rounded-full bg-white dark:bg-[#0C1B3E] hover:bg-blue-50 dark:hover:bg-[#132A5E] border border-blue-300 dark:border-sky-400/40 text-blue-600 dark:text-sky-300 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => scrollTrack(360)}
-              aria-label="Scroll team right"
-              className="p-2.5 rounded-full bg-white dark:bg-[#0C1B3E] hover:bg-blue-50 dark:hover:bg-[#132A5E] border border-blue-300 dark:border-sky-400/40 text-blue-600 dark:text-sky-300 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
           </div>
         </div>
 
-        {/* 3 Horizontal Scrollable Cards */}
-        <div
-          ref={scrollTrackRef}
-          className="flex gap-6 sm:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-1 items-start"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
+        {/* Editorial Team Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8 items-stretch">
           {teamMembers.length === 0 ? (
-            <div className="w-full text-center py-12 px-6 rounded-3xl bg-blue-50/50 dark:bg-sky-950/20 border border-dashed border-blue-300 dark:border-sky-500/30">
-              <Users className="w-8 h-8 text-blue-500 dark:text-sky-400 mx-auto mb-2 opacity-70" />
+            <div className="col-span-full w-full text-center py-14 px-6 rounded-3xl bg-blue-50/50 dark:bg-sky-950/20 border border-dashed border-blue-300 dark:border-sky-500/30">
+              <Users className="w-10 h-10 text-blue-500 dark:text-sky-400 mx-auto mb-2 opacity-70" />
               <p className="font-mono text-sm text-slate-700 dark:text-slate-300 font-semibold">
                 No team members currently active in the leadership roster.
               </p>
@@ -292,17 +264,11 @@ export const AboutPage = ({ onInquiryClick }) => {
             </div>
           ) : (
             teamMembers.map((member, idx) => {
-              const isOpen = !!openCards[idx];
               const memberImg = member.photo || member.image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop";
               const roleText = member.role || "Lead Specialist";
-              const decreeText = member.decree || `${roleText.toUpperCase()} DECREE`;
               const qualText = member.qualification || member.credentials || "B.Tech Civil";
-              const tagText = member.tag || qualText || "IS-456 STRUCTURAL EXECUTION";
-              const sigText = member.signature || `${member.name || "Leader"} ~`;
-
-              const roleWords = roleText.trim().split(/\s+/);
-              const badgeTitle = member.badgeTitle || (roleWords[0] || "LEAD").toUpperCase();
-              const badgeSub = member.badgeSub || (roleWords.slice(1).join(" ") || "OFFICER").toUpperCase();
+              const expText = member.experience || "10+ Years Exp";
+              const tagText = member.tag || qualText || "IS-456 STRUCTURAL LEAD";
 
               const specsList = Array.isArray(member.specs) && member.specs.length > 0
                 ? member.specs
@@ -313,111 +279,223 @@ export const AboutPage = ({ onInquiryClick }) => {
               return (
                 <div
                   key={member.id || idx}
-                  className="snap-center shrink-0 w-[320px] sm:w-[365px] flex flex-col items-center"
+                  className="group relative rounded-3xl bg-white/95 dark:bg-gradient-to-b dark:from-[#0B1A3C] dark:via-[#07132F] dark:to-[#040C20] border border-slate-200 dark:border-sky-400/25 hover:border-sky-400/60 dark:hover:border-sky-400/80 shadow-xl hover:shadow-2xl hover:shadow-sky-500/10 transition-all duration-500 flex flex-col justify-between overflow-hidden"
                 >
-                  {/* Top Architectural Titanium Cylinder Rod */}
-                  <div className="w-full h-14 bg-gradient-to-r from-slate-100 via-blue-50 to-slate-100 dark:from-[#0B1A3C] dark:via-[#132A5E] dark:to-[#0B1A3C] rounded-full shadow-xl border border-blue-300 dark:border-sky-400/40 flex items-center justify-between px-3 relative z-30">
-                    <div className="w-5 h-8 rounded-l-full bg-gradient-to-r from-blue-600 to-sky-500 shadow-inner flex items-center justify-center border border-white/20">
-                      <span className="w-1.5 h-3 rounded-full bg-white/40" />
-                    </div>
+                  {/* Portrait Area with Editorial Grayscale-to-Color Transition */}
+                  <div className="relative h-[340px] sm:h-[370px] w-full overflow-hidden bg-slate-900 shrink-0">
+                    <img
+                      src={memberImg}
+                      alt={member.name}
+                      className="w-full h-full object-cover object-top filter grayscale contrast-[1.08] brightness-[0.95] group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 ease-out"
+                      loading="lazy"
+                    />
+                    
+                    {/* Dark gradient scrim */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#040C20] via-[#040C20]/40 to-transparent opacity-90 group-hover:opacity-75 transition-opacity duration-500" />
 
-                    <div className="font-mono text-[10px] font-bold text-blue-700 dark:text-sky-300 tracking-[0.2em] uppercase truncate px-2 text-center">
-                      {decreeText}
-                    </div>
-
-                    <div className="w-5 h-8 rounded-r-full bg-gradient-to-r from-sky-500 to-blue-600 shadow-inner flex items-center justify-center border border-white/20">
-                      <span className="w-1.5 h-3 rounded-full bg-white/40" />
-                    </div>
-                  </div>
-
-                  {/* The Unrolling Dossier Sheet (Grid template rows transition for smooth unfurl) */}
-                  <div
-                    className={`w-[92%] -mt-2 relative z-20 grid transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                      isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                    }`}
-                  >
-                    <div className="overflow-hidden">
-                      <div className="bg-white/95 dark:bg-gradient-to-b dark:from-[#0F224D] dark:via-[#0A1838] dark:to-[#05112B] border-x-2 border-b-2 border-blue-400 dark:border-sky-400/60 rounded-b-3xl shadow-2xl p-5 pt-8 pb-10 space-y-3.5 text-slate-900 dark:text-white">
-                        
-                        <div className="flex items-center justify-between border-b border-slate-200 dark:border-sky-400/20 pb-2 text-[9px] font-mono font-bold text-blue-600 dark:text-sky-300">
-                          <span className="truncate pr-2">{tagText}</span>
-                          <span className="shrink-0">{member.experience || "10+ Years Exp"}</span>
-                        </div>
-
-                        {/* Photo + Beside it: Name, Role, Bio */}
-                        <div className="flex items-start gap-3.5">
-                          <div className="w-24 h-28 shrink-0 rounded-2xl overflow-hidden border-2 border-blue-400 dark:border-sky-400/60 shadow-lg bg-blue-50 dark:bg-sky-500/10">
-                            <img
-                              src={memberImg}
-                              alt={member.name}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-
-                          <div className="space-y-1 min-w-0">
-                            <span className="text-[9px] font-mono font-bold tracking-wider text-blue-600 dark:text-sky-400 uppercase">
-                              OFFICIAL SPECIALIST
-                            </span>
-                            <h3 className="font-display text-[16px] sm:text-[17px] font-bold text-slate-900 dark:text-white leading-tight">
-                              {member.name}
-                            </h3>
-                            <p className="font-mono text-[9.5px] font-bold text-blue-600 dark:text-sky-300">
-                              {member.role}
-                            </p>
-                            <p className="text-[12px] sm:text-[13px] text-slate-600 dark:text-gray-300 font-sans leading-relaxed pt-0.5">
-                              {member.bio || "Key contributor to INFRA VISION's architectural engineering leadership."}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Competencies */}
-                        <div className="pt-2 border-t border-slate-200 dark:border-sky-400/20 grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-700 dark:text-gray-200 font-semibold">
-                          {specsList.map((spec, sIdx) => (
-                            <div key={sIdx} className="flex items-center gap-1 truncate">
-                              <span className="text-blue-600 dark:text-sky-400">•</span>
-                              <span className="truncate">{spec}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Official Verification & Signature Row */}
-                        <div className="pt-2 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-gray-400">
-                          <span>VERIFIED ITLC INDIA</span>
-                          <span className="font-serif italic text-xs font-bold text-blue-600 dark:text-sky-400">
-                            {sigText}
-                          </span>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Circular Seal (Physically bonded directly to bottom center of the letter) */}
-                  <div className="relative z-40 -mt-7 flex justify-center w-full">
-                    <button
-                      onClick={() => toggleCard(idx)}
-                      aria-label={`Toggle ${member.name} profile`}
-                      className="w-20 h-20 sm:w-[84px] sm:h-[84px] rounded-full bg-gradient-to-br from-blue-600 via-sky-500 to-blue-800 dark:from-[#1E3A8A] dark:via-[#0284C7] dark:to-[#081533] border-2 border-white dark:border-sky-300 shadow-2xl shadow-blue-500/40 dark:shadow-sky-400/50 flex flex-col items-center justify-center p-1.5 text-center cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-300 ring-2 ring-blue-400/30"
-                    >
-                      <span className="text-[10px] sm:text-[10.5px] font-mono font-black text-white leading-none uppercase tracking-wider drop-shadow-md">
-                        {badgeTitle}
+                    {/* Top floating pill tags */}
+                    <div className="absolute top-4 inset-x-4 flex items-center justify-between z-10 gap-2">
+                      <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-sky-300 font-mono text-[10px] font-bold tracking-wider uppercase truncate">
+                        {tagText}
                       </span>
-                      <span className="text-[9.5px] sm:text-[10px] font-mono font-black text-sky-100 leading-tight uppercase tracking-wider drop-shadow-md mt-0.5">
-                        {badgeSub}
+                      <span className="px-3 py-1 rounded-full bg-blue-600/80 backdrop-blur-md border border-sky-300/30 text-white font-mono text-[10px] font-bold shrink-0">
+                        {expText}
                       </span>
-                      <div className="mt-1 flex items-center gap-1 text-[8px] font-mono font-black text-white bg-black/40 dark:bg-black/50 px-2 py-0.5 rounded-full border border-white/30 shadow-inner">
-                        <span>{isOpen ? "▲ WRAP" : "▼ TAP OPEN"}</span>
+                    </div>
+
+                    {/* Bottom identity overlaid on photo */}
+                    <div className="absolute bottom-4 inset-x-5 z-10 space-y-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+                        <span className="text-[10px] font-mono font-bold tracking-widest text-sky-300 uppercase">
+                          OFFICIAL SPECIALIST
+                        </span>
                       </div>
-                    </button>
+                      <h3 className="font-display text-xl sm:text-2xl font-bold text-white tracking-tight leading-tight group-hover:text-sky-300 transition-colors">
+                        {member.name}
+                      </h3>
+                      <p className="font-mono text-xs text-slate-300 font-medium truncate">
+                        {roleText}
+                      </p>
+                    </div>
                   </div>
 
+                  {/* Lower Excerpt & View More Trigger */}
+                  <div className="p-5 sm:p-6 space-y-4 flex flex-col justify-between flex-1 bg-white/70 dark:bg-transparent">
+                    {/* Short Bio preview */}
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-sans line-clamp-2 leading-relaxed">
+                      {member.bio || member.viewMoreText || "Key contributor to INFRA VISION's architectural engineering leadership."}
+                    </p>
+
+                    {/* Specialization Tags */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {specsList.slice(0, 3).map((spec, sIdx) => (
+                        <span
+                          key={sIdx}
+                          className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-sky-500/10 border border-blue-200/60 dark:border-sky-400/20 text-blue-700 dark:text-sky-300 font-mono text-[10px] font-semibold truncate"
+                        >
+                          {spec}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* "View Dossier & Bio" Button */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-sky-400/15">
+                      <button
+                        onClick={() => {
+                          soundManager?.playHapticClick?.(600);
+                          setSelectedMemberForModal(member);
+                        }}
+                        className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-blue-600 dark:bg-sky-500/10 dark:hover:bg-gradient-to-r dark:hover:from-blue-600 dark:hover:to-sky-500 border border-slate-200 dark:border-sky-400/30 text-slate-800 dark:text-sky-300 hover:text-white dark:hover:text-white font-mono text-xs font-bold tracking-wider uppercase flex items-center justify-between transition-all duration-300 group/btn cursor-pointer shadow-sm hover:shadow-lg hover:shadow-sky-500/25"
+                      >
+                        <span>View Dossier & Bio</span>
+                        <ArrowUpRight className="w-4 h-4 text-slate-500 dark:text-sky-400 group-hover/btn:text-white group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               );
             })
           )}
         </div>
       </div>
+
+      {/* 4.1 VIEW MORE / FULL DOSSIER MODAL DRAWER */}
+      {selectedMemberForModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md"
+          onClick={() => setSelectedMemberForModal(null)}
+        >
+          <div
+            className="relative w-full max-w-2xl bg-white dark:bg-[#07132F] border-2 border-sky-400/50 rounded-3xl shadow-2xl shadow-sky-500/20 overflow-hidden flex flex-col max-h-[92vh] text-slate-900 dark:text-white"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-sky-400/20 flex items-center justify-between bg-slate-50 dark:bg-black/20">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span className="font-mono text-xs font-bold text-blue-600 dark:text-sky-400 uppercase tracking-wider">
+                  OFFICIAL LEADERSHIP DOSSIER
+                </span>
+              </div>
+              <button
+                onClick={() => setSelectedMemberForModal(null)}
+                className="p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-300 transition-colors cursor-pointer"
+                aria-label="Close dossier"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Body */}
+            <div className="p-6 sm:p-8 space-y-6 overflow-y-auto no-scrollbar">
+              {/* Identity Header */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 pb-6 border-b border-slate-200 dark:border-sky-400/20 text-center sm:text-left">
+                <div className="w-28 h-32 sm:w-32 sm:h-36 rounded-2xl overflow-hidden border-2 border-sky-400/60 shadow-xl bg-slate-900 shrink-0">
+                  <img
+                    src={selectedMemberForModal.photo || selectedMemberForModal.image}
+                    alt={selectedMemberForModal.name}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+                <div className="space-y-2 flex-1 min-w-0">
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-blue-600 dark:text-sky-400 uppercase">
+                    INFRA VISION ARCHITECTURAL ROSTER
+                  </span>
+                  <h3 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                    {selectedMemberForModal.name}
+                  </h3>
+                  <p className="font-mono text-xs sm:text-sm text-sky-600 dark:text-sky-300 font-bold">
+                    {selectedMemberForModal.role}
+                  </p>
+                  
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                    <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-sky-300 font-mono text-xs font-bold border border-blue-400/30">
+                      {selectedMemberForModal.qualification || selectedMemberForModal.credentials || "B.Tech Civil"}
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold border border-emerald-400/30">
+                      {selectedMemberForModal.experience || "10+ Years Exp"}
+                    </span>
+                    {selectedMemberForModal.linkedin && (
+                      <a
+                        href={selectedMemberForModal.linkedin}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3 py-1 rounded-full bg-[#0A66C2]/15 hover:bg-[#0A66C2] text-[#0A66C2] hover:text-white dark:text-sky-300 dark:hover:text-white font-mono text-xs font-bold border border-[#0A66C2]/30 flex items-center gap-1.5 transition-all"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>LinkedIn</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* View More Full Narrative */}
+              <div className="space-y-2">
+                <h4 className="font-mono text-xs font-bold text-slate-500 dark:text-sky-400 uppercase tracking-widest">
+                  EXECUTIVE NARRATIVE & BACKGROUND
+                </h4>
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-sky-400/20 text-slate-700 dark:text-slate-200 text-sm sm:text-[15px] font-sans leading-relaxed whitespace-pre-line">
+                  {selectedMemberForModal.viewMoreText || selectedMemberForModal.bio || "Key contributor to INFRA VISION's architectural engineering leadership."}
+                </div>
+              </div>
+
+              {/* Specializations & Certified Skills */}
+              <div className="space-y-2">
+                <h4 className="font-mono text-xs font-bold text-slate-500 dark:text-sky-400 uppercase tracking-widest">
+                  CORE COMPETENCIES & CERTIFIED SKILLS
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {(Array.isArray(selectedMemberForModal.specs) && selectedMemberForModal.specs.length > 0
+                    ? selectedMemberForModal.specs
+                    : (selectedMemberForModal.qualification || selectedMemberForModal.credentials || "Grade-A Execution, Structural Supervision, Design Quality")
+                        .split(",")
+                        .map(s => s.trim())
+                        .filter(Boolean)
+                  ).map((spec, sIdx) => (
+                    <div
+                      key={sIdx}
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-blue-50/60 dark:bg-sky-500/10 border border-blue-200/60 dark:border-sky-400/20 text-xs font-mono font-semibold text-slate-800 dark:text-slate-200"
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-sky-400 shrink-0" />
+                      <span>{spec}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Verification Seal */}
+              <div className="pt-4 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between text-xs font-mono text-slate-500 dark:text-slate-400">
+                <span>VERIFIED ITLC INDIA INFRA VISION</span>
+                <span className="font-serif italic text-blue-600 dark:text-sky-400">
+                  {selectedMemberForModal.name} ~
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between bg-slate-50 dark:bg-black/20">
+              <button
+                onClick={() => setSelectedMemberForModal(null)}
+                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white font-mono text-xs font-bold cursor-pointer hover:bg-slate-300 dark:hover:bg-white/20 transition-all"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedMemberForModal(null);
+                  onInquiryClick();
+                }}
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white font-mono text-xs font-bold cursor-pointer shadow-lg shadow-sky-500/25 flex items-center gap-1.5 transition-all"
+              >
+                <span>Consult With Specialist</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 5. CYLINDRICAL CONSULTATION CARD (LAST SECTION) */}
       <div className="relative overflow-hidden rounded-full sm:rounded-full py-8 sm:py-10 px-6 sm:px-14 bg-white/95 dark:bg-gradient-to-r dark:from-[#0E204A] dark:via-[#09183B] dark:to-[#050E24] border border-blue-300 dark:border-sky-400/40 ring-1 ring-blue-100 dark:ring-sky-300/20 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
