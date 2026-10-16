@@ -109,7 +109,7 @@ export const AboutPage = ({ onInquiryClick }) => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="relative rounded-3xl overflow-hidden border border-slate-200/90 dark:border-sky-400/40 shadow-2xl group min-h-[380px] sm:min-h-[460px] flex items-center justify-center bg-[#07132F]"
+              className="relative rounded-3xl overflow-hidden border border-slate-200/90 dark:border-sky-400/40 shadow-2xl group aspect-[4/3] w-full bg-[#07132F]"
             >
               {/* Running Neon Border Light */}
               <BorderBeam size={280} duration={12} colorFrom="#38BDF8" colorTo="#2563EB" />
@@ -286,12 +286,12 @@ export const AboutPage = ({ onInquiryClick }) => {
                     <img
                       src={memberImg}
                       alt={member.name}
-                      className="w-full h-full object-cover object-top filter grayscale contrast-[1.08] brightness-[0.95] group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 ease-out"
+                      className="w-full h-full object-contain p-2 pb-16 pt-9 filter contrast-[1.05] group-hover:scale-105 transition-all duration-700 ease-out"
                       loading="lazy"
                     />
                     
                     {/* Dark gradient scrim */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#040C20] via-[#040C20]/40 to-transparent opacity-90 group-hover:opacity-75 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#040C20]/90 via-[#040C20]/20 to-transparent pointer-events-none" />
 
                     {/* Top floating pill tags */}
                     <div className="absolute top-3 inset-x-3 flex items-center justify-between z-10 gap-2">
@@ -323,7 +323,7 @@ export const AboutPage = ({ onInquiryClick }) => {
                   {/* Lower Excerpt & View More Trigger */}
                   <div className="pt-3.5 pb-1.5 px-2.5 space-y-3 flex flex-col justify-between flex-1">
                     {/* Short Bio preview */}
-                    <p className="text-[11.5px] sm:text-xs text-slate-600 dark:text-gray-300 font-sans line-clamp-2 leading-relaxed">
+                    <p className="text-[11.5px] sm:text-xs text-slate-600 dark:text-gray-300 font-sans line-clamp-2 leading-relaxed text-justify [text-justify:inter-word]">
                       {member.bio || member.viewMoreText || "Key contributor to INFRA VISION's architectural engineering leadership."}
                     </p>
 
@@ -391,11 +391,11 @@ export const AboutPage = ({ onInquiryClick }) => {
             <div className="p-6 sm:p-8 space-y-6 overflow-y-auto no-scrollbar">
               {/* Identity Header */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 pb-6 border-b border-slate-200 dark:border-sky-400/20 text-center sm:text-left">
-                <div className="w-28 h-32 sm:w-32 sm:h-36 rounded-2xl overflow-hidden border-2 border-sky-400/60 shadow-xl bg-slate-900 shrink-0">
+                <div className="w-28 h-32 sm:w-32 sm:h-36 rounded-2xl overflow-hidden border-2 border-sky-400/60 shadow-xl bg-slate-900 shrink-0 flex items-center justify-center p-2">
                   <img
                     src={selectedMemberForModal.photo || selectedMemberForModal.image}
                     alt={selectedMemberForModal.name}
-                    className="w-full h-full object-cover object-top"
+                    className="w-full h-full object-contain filter contrast-[1.05]"
                   />
                 </div>
                 <div className="space-y-2 flex-1 min-w-0">
@@ -431,12 +431,43 @@ export const AboutPage = ({ onInquiryClick }) => {
                 </div>
               </div>
 
+              {/* Highlighted Experience & Organization Credentials */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-2xl bg-gradient-to-br from-blue-500/15 via-sky-500/10 to-transparent border border-sky-400/40 shadow-sm flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-sky-400/50 flex items-center justify-center shrink-0">
+                    <Award className="w-5 h-5 text-sky-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block font-mono text-[10px] uppercase font-bold text-sky-600 dark:text-sky-300 tracking-wider">
+                      TOTAL INDUSTRY EXPERIENCE
+                    </span>
+                    <span className="font-display text-base font-extrabold text-slate-900 dark:text-white truncate block">
+                      {selectedMemberForModal.experience || "23+ Years Exp"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-500/15 via-blue-500/10 to-transparent border border-blue-400/40 shadow-sm flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-blue-400/50 flex items-center justify-center shrink-0">
+                    <Building2 className="w-5 h-5 text-blue-500 dark:text-sky-300" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block font-mono text-[10px] uppercase font-bold text-blue-600 dark:text-sky-300 tracking-wider">
+                      COMPANY & AFFILIATION
+                    </span>
+                    <span className="font-display text-base font-extrabold text-slate-900 dark:text-white truncate block">
+                      {selectedMemberForModal.company || selectedMemberForModal.previous_companies || "ITLC INDIA PVT LTD"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* View More Full Narrative */}
               <div className="space-y-2">
                 <h4 className="font-mono text-xs font-bold text-slate-500 dark:text-sky-400 uppercase tracking-widest">
                   EXECUTIVE NARRATIVE & BACKGROUND
                 </h4>
-                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-sky-400/20 text-slate-700 dark:text-slate-200 text-sm sm:text-[15px] font-sans leading-relaxed whitespace-pre-line">
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-sky-400/20 text-slate-700 dark:text-slate-200 text-sm sm:text-[15px] font-sans leading-relaxed whitespace-pre-line text-justify [text-justify:inter-word]">
                   {selectedMemberForModal.viewMoreText || selectedMemberForModal.bio || "Key contributor to INFRA VISION's architectural engineering leadership."}
                 </div>
               </div>
