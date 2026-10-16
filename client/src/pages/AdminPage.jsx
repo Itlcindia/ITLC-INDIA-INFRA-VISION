@@ -26,6 +26,7 @@ import {
   ExternalLink,
   RefreshCw,
   X,
+  Sparkles,
   ChevronRight,
   MapPin,
   Mail,
@@ -3328,6 +3329,7 @@ const TeamEditorView = ({
   const [experience, setExperience] = useState("");
   const [bio, setBio] = useState("");
   const [viewMoreText, setViewMoreText] = useState("");
+  const [bioLines, setBioLines] = useState(["", "", "", "", ""]);
   const [specs, setSpecs] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [photo, setPhoto] = useState("https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
@@ -3339,7 +3341,14 @@ const TeamEditorView = ({
     setQualification("B.Tech Civil");
     setExperience("10+ Years Exp");
     setBio("Key contributor to INFRA VISION's architectural engineering leadership.");
-    setViewMoreText("Detailed executive narrative, landmark project milestones, engineering certifications, and design philosophies that display when visitors click 'View More / View Dossier' on the public website.");
+    setBioLines([
+      "Certified engineering leadership with extensive industry project experience",
+      "Specializing in structural execution, architectural planning, and turnkey oversight",
+      "Skilled in CAD/BIM modeling, site coordination, and structural compliance",
+      "Experienced in collaborating with reputed tier-1 construction & interior brands",
+      "Uncompromising dedication to quality, craftsmanship, and client satisfaction"
+    ]);
+    setViewMoreText("");
     setSpecs("Certified Lead, Site Supervision, Grade-A Execution");
     setLinkedin("");
     setPhoto("https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
@@ -3353,7 +3362,49 @@ const TeamEditorView = ({
     setQualification(m.qualification || m.credentials || "B.Tech Civil");
     setExperience(m.experience || "10+ Years Exp");
     setBio(m.bio || "Key contributor to INFRA VISION's architectural engineering leadership.");
-    setViewMoreText(m.viewMoreText || m.bio || "");
+    const fullText = m.viewMoreText || m.bio || "";
+    setViewMoreText(fullText);
+
+    // Parse existing text into discrete lines for the line-by-line editor
+    const rawLines = fullText
+      .split(/\n+/)
+      .map((l) => l.replace(/^\s*(?:[•\-\*]|\d+[\.\)])\s*/, "").trim())
+      .filter((l) => {
+        if (!l) return false;
+        // Skip redundant standalone experience headlines
+        if (l.length < 50 && /^\d+\+?\s*years?(?:\s+of)?(?:\s+industry)?(?:\s+experience)?$/i.test(l)) {
+          return false;
+        }
+        return true;
+      });
+
+    if (rawLines.length >= 5) {
+      setBioLines(rawLines);
+    } else {
+      // Split clauses if single paragraph
+      const decomposed = [];
+      for (const p of rawLines) {
+        const sentences = p
+          .split(/(?<!\b(?:Ar|Er|Dr|Mr|Mrs|Ms|vs|e\.g|i\.e))\.\s+|;\s+/g)
+          .map((s) => s.trim().replace(/\.$/, ""))
+          .filter(Boolean);
+
+        for (const sent of sentences) {
+          const clauseSplitRegex = /(?=,\s*(?:specializing in|skilled in|experienced in|with a strong focus on|with a focus on|spearheading|pioneering|combining|enforcing|under (?:his|her|their)|guaranteeing|certified as)\b)/gi;
+          const subClauses = sent
+            .split(clauseSplitRegex)
+            .map((c) => c.replace(/^,\s*/, "").trim())
+            .filter(Boolean);
+          decomposed.push(...subClauses);
+        }
+      }
+
+      while (decomposed.length < 5) {
+        decomposed.push("");
+      }
+      setBioLines(decomposed.length > 0 ? decomposed : ["", "", "", "", ""]);
+    }
+
     setSpecs(Array.isArray(m.specs) ? m.specs.join(", ") : (m.specs || "Certified Lead, Site Supervision, Grade-A Execution"));
     setLinkedin(m.linkedin || "");
     setPhoto(m.photo || m.image || "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
@@ -3375,8 +3426,9 @@ const TeamEditorView = ({
   const handleMemberSubmit = (e) => {
     e.preventDefault();
     const cleanQual = qualification.trim() || "B.Tech Civil";
-    const cleanBio = bio.trim() || "Key contributor to INFRA VISION's architectural engineering leadership.";
-    const cleanViewMore = viewMoreText.trim() || cleanBio;
+    const cleanLines = bioLines.map((l) => l.trim()).filter(Boolean);
+    const cleanViewMore = cleanLines.join("\n") || viewMoreText.trim() || bio.trim();
+    const cleanBio = bio.trim() || cleanLines[0] || "Key contributor to INFRA VISION's architectural engineering leadership.";
     const parsedSpecs = specs.split(",").map((s) => s.trim()).filter(Boolean);
 
     const memberData = {
@@ -3586,23 +3638,76 @@ const TeamEditorView = ({
                 />
               </div>
 
-              {/* View More Full Narrative */}
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sky-700 dark:text-sky-300 font-mono text-xs uppercase font-bold">
-                    "View More" Dossier Narrative (Full In-Depth Story)
-                  </label>
-                  <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                    Shown when visitor taps "View Dossier"
-                  </span>
+              {/* Line-by-Line Executive Dossier Bullet Points */}
+              <div className="space-y-2.5 p-3 rounded-2xl bg-slate-100/70 dark:bg-black/25 border border-sky-400/30">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="text-sky-700 dark:text-sky-300 font-mono text-xs uppercase font-bold flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Executive Dossier Bullet Lines (Shown in View Bio)</span>
+                    </label>
+                    <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                      Har point alag line me likhein. Brands (SLEEK, EVOK, etc.) auto-capitalized & green highlight honge.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setBioLines((prev) => [...prev, ""])}
+                    className="self-start sm:self-auto px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/40 text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Line</span>
+                  </button>
                 </div>
-                <textarea
-                  rows={4}
-                  placeholder="Detailed career history, landmark projects, architectural philosophies, awards, or milestone accomplishments..."
-                  value={viewMoreText}
-                  onChange={(e) => setViewMoreText(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#040C20] border-2 border-sky-400/50 text-slate-900 dark:text-white text-sm leading-relaxed"
-                />
+
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                  {bioLines.map((line, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0 shadow-[0_0_8px_#10B981]" />
+                      <span className="font-mono text-[10.5px] text-slate-500 dark:text-slate-400 font-bold shrink-0 w-12">
+                        Line {idx + 1}:
+                      </span>
+                      <input
+                        type="text"
+                        value={line}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setBioLines((prev) => {
+                            const next = [...prev];
+                            next[idx] = val;
+                            return next;
+                          });
+                        }}
+                        placeholder={
+                          idx === 0
+                            ? "e.g. An experienced Interior Designer with 23 years of industry experience"
+                            : idx === 1
+                            ? "e.g. Specializing in residential, commercial, and office interiors"
+                            : idx === 2
+                            ? "e.g. Skilled in space planning, furniture design, material selection"
+                            : idx === 3
+                            ? "e.g. Experienced in working with reputed brands like SLEEK, HOMETOWN, EVOK, HINDWARE, and HETTICH"
+                            : idx === 4
+                            ? "e.g. With a strong focus on quality, craftsmanship, and client satisfaction"
+                            : "Enter additional specialized credential or milestone..."
+                        }
+                        className="flex-1 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-xs leading-relaxed"
+                      />
+                      {bioLines.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setBioLines((prev) => prev.filter((_, i) => i !== idx));
+                          }}
+                          className="p-1.5 rounded-lg hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors cursor-pointer shrink-0"
+                          title="Remove line"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Competencies / Certified Skills */}

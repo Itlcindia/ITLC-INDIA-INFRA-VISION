@@ -105,11 +105,11 @@ const defaultTeam = [
     qualification: "B.Arch (SPA Delhi), Interior Lead",
     credentials: "B.Arch (SPA Delhi), Interior Lead",
     photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
-    bio: "23+ years of industry experience specializing in residential, commercial, and office interiors. Skilled in space planning, furniture design, material selection with reputed brands like Sleek, HomeTown, EVOK, Hindware, and Hettich.",
-    viewMoreText: "An experienced Interior Designer with 23 years of industry experience, specializing in residential, commercial, and office interiors. Skilled in space planning, furniture design, material selection, and creating elegant, functional spaces tailored to clients’ needs. Experienced in working with reputed brands like Sleek, HomeTown, EVOK, Hindware, and Hettich, with a strong focus on quality, craftsmanship, and client satisfaction.",
+    bio: "23+ years of industry experience specializing in residential, commercial, and office interiors. Skilled in space planning, furniture design, material selection with reputed brands like SLEEK, HOMETOWN, EVOK, HINDWARE, and HETTICH.",
+    viewMoreText: "An experienced Interior Designer with 23 years of industry experience\nSpecializing in residential, commercial, and office interiors\nSkilled in space planning, furniture design, material selection, and creating elegant, functional spaces tailored to clients’ needs\nExperienced in working with reputed brands like SLEEK, HOMETOWN, EVOK, HINDWARE, and HETTICH\nWith a strong focus on quality, craftsmanship, and client satisfaction",
     specs: [
       "23+ Years Experience",
-      "Sleek & Hettich Certified",
+      "SLEEK & HETTICH Certified",
       "Space Planning & Styling",
       "Luxury Turnkey Interiors"
     ],
@@ -594,7 +594,7 @@ export const CMSProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.id === "interior") {
-          if (parsed[0]?.experience === "8+ Years Exp" || parsed[0]?.viewMoreText?.includes("23+ Years of Industry Experience\n")) {
+          if (parsed[0]?.experience === "8+ Years Exp" || !parsed[0]?.viewMoreText?.includes("SLEEK")) {
             parsed[0].role = defaultTeam[0].role;
             parsed[0].experience = defaultTeam[0].experience;
             parsed[0].bio = defaultTeam[0].bio;

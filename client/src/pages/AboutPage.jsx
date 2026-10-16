@@ -31,6 +31,27 @@ const HIGHLIGHT_REGEX_STR = "(\\b\\d+\\+?\\s*years?(?:\\s+of)?(?:\\s+(?:industry
 const SPLIT_HIGHLIGHT_REGEX = new RegExp(HIGHLIGHT_REGEX_STR, "gi");
 const TEST_HIGHLIGHT_REGEX = new RegExp(`^${HIGHLIGHT_REGEX_STR}$`, "i");
 
+const BRAND_NAMES_LIST = [
+  "Sleek",
+  "HomeTown",
+  "EVOK",
+  "Hindware",
+  "Hettich",
+  "Hafele",
+  "Tata",
+  "TATA Tiscon",
+  "L&T",
+  "DLF",
+  "Godrej",
+  "Kohler",
+  "Jaquar",
+  "Saint-Gobain",
+  "Asian Paints",
+  "Ultratech"
+];
+
+const BRAND_TEST_REGEX = new RegExp(`^(?:${BRAND_NAMES_LIST.map((b) => b.replace(/[-\\/\\^$*+?.()|[\\]{}]/g, "\\$&")).join("|")})$`, "i");
+
 export const parseBioToBulletLines = (rawText) => {
   if (!rawText) return [];
 
@@ -39,33 +60,46 @@ export const parseBioToBulletLines = (rawText) => {
 
   let lines = [];
 
-  for (const para of rawParagraphs) {
-    // Strip explicit bullet indicators (- , • , * , 1. , 1) ) but preserve numbers like "23+ Years"
-    const cleanPara = para.replace(/^\s*(?:[•\-\*]|\d+[\.\)])\s*/, "").trim();
-    if (!cleanPara) continue;
+  // If already entered as 5+ distinct lines (e.g. from Admin Line-by-Line Editor), preserve them directly
+  if (rawParagraphs.length >= 5) {
+    lines = rawParagraphs
+      .map((p) => p.replace(/^\s*(?:[•\-\*]|\d+[\.\)])\s*/, "").trim())
+      .filter((p) => {
+        if (!p) return false;
+        if (p.length < 50 && /^\d+\+?\s*years?(?:\s+of)?(?:\s+industry)?(?:\s+experience)?$/i.test(p)) {
+          return false;
+        }
+        return true;
+      });
+  } else {
+    for (const para of rawParagraphs) {
+      // Strip explicit bullet indicators (- , • , * , 1. , 1) ) but preserve numbers like "23+ Years"
+      const cleanPara = para.replace(/^\s*(?:[•\-\*]|\d+[\.\)])\s*/, "").trim();
+      if (!cleanPara) continue;
 
-    // Filter out standalone experience headlines (e.g., "23+ Years of Industry Experience")
-    // because the modal already displays "TOTAL INDUSTRY EXPERIENCE: 23+ Years Exp" in a dedicated card right above
-    if (cleanPara.length < 50 && /^\d+\+?\s*years?(?:\s+of)?(?:\s+industry)?(?:\s+experience)?$/i.test(cleanPara)) {
-      continue;
-    }
+      // Filter out standalone experience headlines (e.g., "23+ Years of Industry Experience")
+      // because the modal already displays "TOTAL INDUSTRY EXPERIENCE: 23+ Years Exp" in a dedicated card right above
+      if (cleanPara.length < 50 && /^\d+\+?\s*years?(?:\s+of)?(?:\s+industry)?(?:\s+experience)?$/i.test(cleanPara)) {
+        continue;
+      }
 
-    // Split sentences using regex (avoiding abbreviations like Ar., Er., Dr., etc.)
-    const sentences = cleanPara
-      .split(/(?<!\b(?:Ar|Er|Dr|Mr|Mrs|Ms|vs|e\.g|i\.e))\.\s+|;\s+/g)
-      .map((s) => s.trim().replace(/\.$/, ""))
-      .filter(Boolean);
-
-    for (const sent of sentences) {
-      // Split on major clause boundaries
-      const clauseSplitRegex = /(?=,\s*(?:specializing in|skilled in|experienced in|with a strong focus on|with a focus on|spearheading|pioneering|combining|enforcing|under (?:his|her|their)|guaranteeing|certified as)\b)/gi;
-
-      const subClauses = sent
-        .split(clauseSplitRegex)
-        .map((c) => c.replace(/^,\s*/, "").trim())
+      // Split sentences using regex (avoiding abbreviations like Ar., Er., Dr., etc.)
+      const sentences = cleanPara
+        .split(/(?<!\b(?:Ar|Er|Dr|Mr|Mrs|Ms|vs|e\.g|i\.e))\.\s+|;\s+/g)
+        .map((s) => s.trim().replace(/\.$/, ""))
         .filter(Boolean);
 
-      lines.push(...subClauses);
+      for (const sent of sentences) {
+        // Split on major clause boundaries
+        const clauseSplitRegex = /(?=,\s*(?:specializing in|skilled in|experienced in|with a strong focus on|with a focus on|spearheading|pioneering|combining|enforcing|under (?:his|her|their)|guaranteeing|certified as)\b)/gi;
+
+        const subClauses = sent
+          .split(clauseSplitRegex)
+          .map((c) => c.replace(/^,\s*/, "").trim())
+          .filter(Boolean);
+
+        lines.push(...subClauses);
+      }
     }
   }
 
@@ -122,12 +156,16 @@ const renderHighlightedBioText = (text) => {
     if (!part) return null;
 
     if (TEST_HIGHLIGHT_REGEX.test(part.trim())) {
+      // Auto-capitalize reputed brand names in UPPERCASE (like EVOK)
+      const isBrand = BRAND_TEST_REGEX.test(part.trim());
+      const displayText = isBrand ? part.toUpperCase() : part;
+
       return (
         <span
           key={idx}
           className="font-semibold text-emerald-600 dark:text-emerald-400"
         >
-          {part}
+          {displayText}
         </span>
       );
     }
