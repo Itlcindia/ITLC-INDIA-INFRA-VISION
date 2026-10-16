@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Wrench, 
@@ -25,9 +25,102 @@ import { MagneticButton } from "../components/ui/MagneticButton";
 import { soundManager } from "../lib/sound";
 import { useCMS } from "../context/CMSContext";
 
+// Intelligent regex-driven editorial bio highlighter for current & future team members
+const formatBioWithHighlights = (rawText) => {
+  if (!rawText) return null;
+
+  const paragraphs = String(rawText).split(/\n+/).filter(Boolean);
+
+  return paragraphs.map((para, pIdx) => {
+    // If paragraph is a standalone headline (e.g. "23+ Years of Industry Experience")
+    if (para.length < 60 && /(\d+\+?\s*years?)/i.test(para)) {
+      return (
+        <div key={pIdx} className="mb-2.5">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-blue-600/20 via-sky-500/20 to-blue-600/10 border border-sky-400/50 text-blue-700 dark:text-sky-300 font-display text-xs sm:text-sm font-bold tracking-wide shadow-sm">
+            <Award className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+            <span>{para}</span>
+          </span>
+        </div>
+      );
+    }
+
+    // Split text into tokens: Experience years, Reputed brands, and Skills keywords
+    const regex = /(\b\d+\+?\s*years?(?:\s+of\s+[\w\s-]*experience)?\b|reputed brands like\s+[A-Za-z0-9,\s&]+?(?=[.,;]|$)|(?:Sleek|HomeTown|EVOK|Hindware|Hettich|Hafele|Tata|L&T|DLF|Godrej|Kohler|Jaquar|Saint-Gobain|Asian Paints|Ultratech)\b|skilled in\s+[A-Za-z0-9,\s&]+?(?=[.,;]|$)|specializing in\s+[A-Za-z0-9,\s&]+?(?=[.,;]|$))/gi;
+
+    const parts = para.split(regex);
+
+    return (
+      <p key={pIdx} className="text-slate-700 dark:text-slate-200 text-xs sm:text-[13px] font-sans leading-relaxed text-justify [text-justify:inter-word] mb-2">
+        {parts.map((part, idx) => {
+          if (!part) return null;
+
+          // 1. Experience match (e.g. "23 years of industry experience")
+          if (/^\d+\+?\s*years?/i.test(part.trim())) {
+            return (
+              <span key={idx} className="font-bold text-sky-600 dark:text-sky-300 bg-sky-500/15 px-1.5 py-0.5 rounded border border-sky-400/40 inline-block my-0.5">
+                {part}
+              </span>
+            );
+          }
+
+          // 2. Reputed brands phrase (e.g. "reputed brands like Sleek, HomeTown, EVOK, Hindware, and Hettich")
+          if (/^reputed brands like/i.test(part.trim())) {
+            return (
+              <span key={idx} className="font-semibold text-blue-600 dark:text-sky-200 bg-blue-500/15 px-1.5 py-0.5 rounded border border-blue-400/35 inline-block my-0.5">
+                {part}
+              </span>
+            );
+          }
+
+          // 2b. Individual Brand match (e.g. Sleek, HomeTown, EVOK, Hindware, Hettich)
+          if (/^(?:Sleek|HomeTown|EVOK|Hindware|Hettich|Hafele|Tata|L&T|DLF|Godrej|Kohler|Jaquar|Saint-Gobain|Asian Paints|Ultratech)$/i.test(part.trim())) {
+            return (
+              <span key={idx} className="font-bold text-blue-700 dark:text-sky-300 underline decoration-sky-400/60 underline-offset-2">
+                {part}
+              </span>
+            );
+          }
+
+          // 3. Skilled in match (e.g. "Skilled in space planning, furniture design, material selection")
+          if (/^skilled in/i.test(part.trim())) {
+            return (
+              <span key={idx} className="font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 px-1.5 py-0.5 rounded border border-emerald-400/40 inline-block my-0.5">
+                {part}
+              </span>
+            );
+          }
+
+          // 4. Specializing in match
+          if (/^specializing in/i.test(part.trim())) {
+            return (
+              <span key={idx} className="font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-500/15 px-1.5 py-0.5 rounded border border-indigo-400/35 inline-block my-0.5">
+                {part}
+              </span>
+            );
+          }
+
+          return part;
+        })}
+      </p>
+    );
+  });
+};
+
 export const AboutPage = ({ onInquiryClick }) => {
   const { team = [], aboutContent = {} } = useCMS();
   const [selectedMemberForModal, setSelectedMemberForModal] = useState(null);
+
+  // Lock background scroll when modal drawer is open
+  useEffect(() => {
+    if (selectedMemberForModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedMemberForModal]);
 
   const teamMembers = Array.isArray(team) ? team : [];
 
@@ -363,15 +456,17 @@ export const AboutPage = ({ onInquiryClick }) => {
       {/* 4.1 VIEW MORE / FULL DOSSIER MODAL DRAWER */}
       {selectedMemberForModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md"
           onClick={() => setSelectedMemberForModal(null)}
+          data-lenis-prevent="true"
         >
           <div
-            className="relative w-full max-w-2xl bg-white dark:bg-[#07132F] border-2 border-sky-400/50 rounded-3xl shadow-2xl shadow-sky-500/20 overflow-hidden flex flex-col max-h-[92vh] text-slate-900 dark:text-white"
+            className="relative w-full max-w-xl bg-white dark:bg-[#07132F] border-2 border-sky-400/50 rounded-2xl sm:rounded-3xl shadow-2xl shadow-sky-500/20 overflow-hidden flex flex-col max-h-[78vh] sm:max-h-[75vh] text-slate-900 dark:text-white"
             onClick={(e) => e.stopPropagation()}
+            data-lenis-prevent="true"
           >
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-sky-400/20 flex items-center justify-between bg-slate-50 dark:bg-black/20">
+            <div className="px-5 py-3 border-b border-slate-200 dark:border-sky-400/20 flex items-center justify-between bg-slate-50 dark:bg-black/20 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                 <span className="font-mono text-xs font-bold text-blue-600 dark:text-sky-400 uppercase tracking-wider">
@@ -388,32 +483,35 @@ export const AboutPage = ({ onInquiryClick }) => {
             </div>
 
             {/* Modal Scrollable Body */}
-            <div className="p-6 sm:p-8 space-y-6 overflow-y-auto no-scrollbar">
+            <div 
+              className="p-4 sm:p-6 space-y-4 overflow-y-auto overscroll-contain no-scrollbar"
+              data-lenis-prevent="true"
+            >
               {/* Identity Header */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 pb-6 border-b border-slate-200 dark:border-sky-400/20 text-center sm:text-left">
-                <div className="w-28 h-32 sm:w-32 sm:h-36 rounded-2xl overflow-hidden border-2 border-sky-400/60 shadow-xl bg-slate-900 shrink-0 flex items-center justify-center p-2">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pb-4 border-b border-slate-200 dark:border-sky-400/20 text-center sm:text-left">
+                <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl overflow-hidden border-2 border-sky-400/60 shadow-xl bg-slate-900 shrink-0 flex items-center justify-center p-1.5">
                   <img
                     src={selectedMemberForModal.photo || selectedMemberForModal.image}
                     alt={selectedMemberForModal.name}
                     className="w-full h-full object-contain filter contrast-[1.05]"
                   />
                 </div>
-                <div className="space-y-2 flex-1 min-w-0">
+                <div className="space-y-1.5 flex-1 min-w-0">
                   <span className="text-[10px] font-mono font-bold tracking-widest text-blue-600 dark:text-sky-400 uppercase">
                     INFRA VISION ARCHITECTURAL ROSTER
                   </span>
-                  <h3 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                  <h3 className="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                     {selectedMemberForModal.name}
                   </h3>
-                  <p className="font-mono text-xs sm:text-sm text-sky-600 dark:text-sky-300 font-bold">
+                  <p className="font-mono text-xs text-sky-600 dark:text-sky-300 font-bold">
                     {selectedMemberForModal.role}
                   </p>
                   
-                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-                    <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-sky-300 font-mono text-xs font-bold border border-blue-400/30">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 pt-0.5">
+                    <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-sky-300 font-mono text-[11px] font-bold border border-blue-400/30">
                       {selectedMemberForModal.qualification || selectedMemberForModal.credentials || "B.Tech Civil"}
                     </span>
-                    <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold border border-emerald-400/30">
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[11px] font-bold border border-emerald-400/30">
                       {selectedMemberForModal.experience || "10+ Years Exp"}
                     </span>
                     {selectedMemberForModal.linkedin && (
@@ -421,9 +519,9 @@ export const AboutPage = ({ onInquiryClick }) => {
                         href={selectedMemberForModal.linkedin}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-3 py-1 rounded-full bg-[#0A66C2]/15 hover:bg-[#0A66C2] text-[#0A66C2] hover:text-white dark:text-sky-300 dark:hover:text-white font-mono text-xs font-bold border border-[#0A66C2]/30 flex items-center gap-1.5 transition-all"
+                        className="px-2.5 py-0.5 rounded-full bg-[#0A66C2]/15 hover:bg-[#0A66C2] text-[#0A66C2] hover:text-white dark:text-sky-300 dark:hover:text-white font-mono text-[11px] font-bold border border-[#0A66C2]/30 flex items-center gap-1.5 transition-all"
                       >
-                        <ExternalLink className="w-3.5 h-3.5" />
+                        <ExternalLink className="w-3 h-3" />
                         <span>LinkedIn</span>
                       </a>
                     )}
@@ -432,48 +530,48 @@ export const AboutPage = ({ onInquiryClick }) => {
               </div>
 
               {/* Highlighted Experience & Organization Credentials */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-2xl bg-gradient-to-br from-blue-500/15 via-sky-500/10 to-transparent border border-sky-400/40 shadow-sm flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-sky-400/50 flex items-center justify-center shrink-0">
-                    <Award className="w-5 h-5 text-sky-400" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/15 via-sky-500/10 to-transparent border border-sky-400/40 shadow-sm flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-blue-500/20 border border-sky-400/50 flex items-center justify-center shrink-0">
+                    <Award className="w-4 h-4 text-sky-400" />
                   </div>
                   <div className="min-w-0">
-                    <span className="block font-mono text-[10px] uppercase font-bold text-sky-600 dark:text-sky-300 tracking-wider">
+                    <span className="block font-mono text-[9.5px] uppercase font-bold text-sky-600 dark:text-sky-300 tracking-wider">
                       TOTAL INDUSTRY EXPERIENCE
                     </span>
-                    <span className="font-display text-base font-extrabold text-slate-900 dark:text-white truncate block">
+                    <span className="font-display text-sm sm:text-base font-extrabold text-slate-900 dark:text-white truncate block">
                       {selectedMemberForModal.experience || "23+ Years Exp"}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-500/15 via-blue-500/10 to-transparent border border-blue-400/40 shadow-sm flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-blue-400/50 flex items-center justify-center shrink-0">
-                    <Building2 className="w-5 h-5 text-blue-500 dark:text-sky-300" />
+                <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500/15 via-blue-500/10 to-transparent border border-blue-400/40 shadow-sm flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-indigo-500/20 border border-blue-400/50 flex items-center justify-center shrink-0">
+                    <Building2 className="w-4 h-4 text-blue-500 dark:text-sky-300" />
                   </div>
                   <div className="min-w-0">
-                    <span className="block font-mono text-[10px] uppercase font-bold text-blue-600 dark:text-sky-300 tracking-wider">
+                    <span className="block font-mono text-[9.5px] uppercase font-bold text-blue-600 dark:text-sky-300 tracking-wider">
                       COMPANY & AFFILIATION
                     </span>
-                    <span className="font-display text-base font-extrabold text-slate-900 dark:text-white truncate block">
+                    <span className="font-display text-sm sm:text-base font-extrabold text-slate-900 dark:text-white truncate block">
                       {selectedMemberForModal.company || selectedMemberForModal.previous_companies || "ITLC INDIA PVT LTD"}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* View More Full Narrative */}
-              <div className="space-y-2">
+              {/* View More Full Narrative with Dynamic Editorial Highlighting */}
+              <div className="space-y-1.5">
                 <h4 className="font-mono text-xs font-bold text-slate-500 dark:text-sky-400 uppercase tracking-widest">
                   EXECUTIVE NARRATIVE & BACKGROUND
                 </h4>
-                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-sky-400/20 text-slate-700 dark:text-slate-200 text-sm sm:text-[15px] font-sans leading-relaxed whitespace-pre-line text-justify [text-justify:inter-word]">
-                  {selectedMemberForModal.viewMoreText || selectedMemberForModal.bio || "Key contributor to INFRA VISION's architectural engineering leadership."}
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-sky-400/20 text-slate-700 dark:text-slate-200">
+                  {formatBioWithHighlights(selectedMemberForModal.viewMoreText || selectedMemberForModal.bio || "Key contributor to INFRA VISION's architectural engineering leadership.")}
                 </div>
               </div>
 
               {/* Specializations & Certified Skills */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <h4 className="font-mono text-xs font-bold text-slate-500 dark:text-sky-400 uppercase tracking-widest">
                   CORE COMPETENCIES & CERTIFIED SKILLS
                 </h4>
@@ -487,9 +585,9 @@ export const AboutPage = ({ onInquiryClick }) => {
                   ).map((spec, sIdx) => (
                     <div
                       key={sIdx}
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-blue-50/60 dark:bg-sky-500/10 border border-blue-200/60 dark:border-sky-400/20 text-xs font-mono font-semibold text-slate-800 dark:text-slate-200"
+                      className="flex items-center gap-2 p-2 rounded-xl bg-blue-50/60 dark:bg-sky-500/10 border border-blue-200/60 dark:border-sky-400/20 text-xs font-mono font-semibold text-slate-800 dark:text-slate-200"
                     >
-                      <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-sky-400 shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400 shrink-0" />
                       <span>{spec}</span>
                     </div>
                   ))}
@@ -497,7 +595,7 @@ export const AboutPage = ({ onInquiryClick }) => {
               </div>
 
               {/* Verification Seal */}
-              <div className="pt-4 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between text-xs font-mono text-slate-500 dark:text-slate-400">
+              <div className="pt-3 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
                 <span>VERIFIED ITLC INDIA INFRA VISION</span>
                 <span className="font-serif italic text-blue-600 dark:text-sky-400">
                   {selectedMemberForModal.name} ~
@@ -506,10 +604,10 @@ export const AboutPage = ({ onInquiryClick }) => {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between bg-slate-50 dark:bg-black/20">
+            <div className="px-5 py-3 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between bg-slate-50 dark:bg-black/20 shrink-0">
               <button
                 onClick={() => setSelectedMemberForModal(null)}
-                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white font-mono text-xs font-bold cursor-pointer hover:bg-slate-300 dark:hover:bg-white/20 transition-all"
+                className="px-3.5 py-1.5 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white font-mono text-xs font-bold cursor-pointer hover:bg-slate-300 dark:hover:bg-white/20 transition-all"
               >
                 Close
               </button>
@@ -518,7 +616,7 @@ export const AboutPage = ({ onInquiryClick }) => {
                   setSelectedMemberForModal(null);
                   onInquiryClick();
                 }}
-                className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white font-mono text-xs font-bold cursor-pointer shadow-lg shadow-sky-500/25 flex items-center gap-1.5 transition-all"
+                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white font-mono text-xs font-bold cursor-pointer shadow-lg shadow-sky-500/25 flex items-center gap-1.5 transition-all"
               >
                 <span>Consult With Specialist</span>
                 <ArrowRight className="w-3.5 h-3.5" />
