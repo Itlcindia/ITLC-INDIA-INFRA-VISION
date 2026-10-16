@@ -44,6 +44,12 @@ export const parseBioToBulletLines = (rawText) => {
     const cleanPara = para.replace(/^\s*(?:[•\-\*]|\d+[\.\)])\s*/, "").trim();
     if (!cleanPara) continue;
 
+    // Filter out standalone experience headlines (e.g., "23+ Years of Industry Experience")
+    // because the modal already displays "TOTAL INDUSTRY EXPERIENCE: 23+ Years Exp" in a dedicated card right above
+    if (cleanPara.length < 50 && /^\d+\+?\s*years?(?:\s+of)?(?:\s+industry)?(?:\s+experience)?$/i.test(cleanPara)) {
+      continue;
+    }
+
     // Split sentences using regex (avoiding abbreviations like Ar., Er., Dr., etc.)
     const sentences = cleanPara
       .split(/(?<!\b(?:Ar|Er|Dr|Mr|Mrs|Ms|vs|e\.g|i\.e))\.\s+|;\s+/g)
@@ -119,7 +125,7 @@ const renderHighlightedBioText = (text) => {
       return (
         <span
           key={idx}
-          className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-400/30 inline-block my-0.5 shadow-sm"
+          className="font-semibold text-emerald-600 dark:text-emerald-400"
         >
           {part}
         </span>
@@ -136,9 +142,9 @@ const formatBioWithHighlights = (rawText) => {
   return (
     <ul className="space-y-2.5">
       {bulletLines.map((line, lIdx) => (
-        <li key={lIdx} className="flex items-start gap-2.5 text-justify [text-justify:inter-word]">
+        <li key={lIdx} className="flex items-start gap-2.5 text-left">
           <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 shadow-[0_0_8px_#10B981] shrink-0 mt-1.5" />
-          <p className="flex-1 text-slate-700 dark:text-slate-200 text-xs sm:text-[13px] font-sans leading-relaxed text-justify [text-justify:inter-word]">
+          <p className="flex-1 text-slate-700 dark:text-slate-200 text-xs sm:text-[13px] font-sans leading-relaxed text-left">
             {renderHighlightedBioText(line)}
           </p>
         </li>

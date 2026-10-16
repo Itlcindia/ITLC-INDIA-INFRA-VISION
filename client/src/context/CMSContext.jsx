@@ -106,7 +106,7 @@ const defaultTeam = [
     credentials: "B.Arch (SPA Delhi), Interior Lead",
     photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
     bio: "23+ years of industry experience specializing in residential, commercial, and office interiors. Skilled in space planning, furniture design, material selection with reputed brands like Sleek, HomeTown, EVOK, Hindware, and Hettich.",
-    viewMoreText: "23+ Years of Industry Experience\n\nAn experienced Interior Designer with 23 years of industry experience, specializing in residential, commercial, and office interiors. Skilled in space planning, furniture design, material selection, and creating elegant, functional spaces tailored to clients’ needs. Experienced in working with reputed brands like Sleek, HomeTown, EVOK, Hindware, and Hettich, with a strong focus on quality, craftsmanship, and client satisfaction.",
+    viewMoreText: "An experienced Interior Designer with 23 years of industry experience, specializing in residential, commercial, and office interiors. Skilled in space planning, furniture design, material selection, and creating elegant, functional spaces tailored to clients’ needs. Experienced in working with reputed brands like Sleek, HomeTown, EVOK, Hindware, and Hettich, with a strong focus on quality, craftsmanship, and client satisfaction.",
     specs: [
       "23+ Years Experience",
       "Sleek & Hettich Certified",
@@ -593,15 +593,17 @@ export const CMSProvider = ({ children }) => {
       const saved = localStorage.getItem("infravision_team");
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.id === "interior" && parsed[0]?.experience === "8+ Years Exp") {
-          parsed[0].role = defaultTeam[0].role;
-          parsed[0].experience = defaultTeam[0].experience;
-          parsed[0].bio = defaultTeam[0].bio;
-          parsed[0].viewMoreText = defaultTeam[0].viewMoreText;
-          parsed[0].specs = defaultTeam[0].specs;
-          try {
-            localStorage.setItem("infravision_team", JSON.stringify(parsed));
-          } catch {}
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.id === "interior") {
+          if (parsed[0]?.experience === "8+ Years Exp" || parsed[0]?.viewMoreText?.includes("23+ Years of Industry Experience\n")) {
+            parsed[0].role = defaultTeam[0].role;
+            parsed[0].experience = defaultTeam[0].experience;
+            parsed[0].bio = defaultTeam[0].bio;
+            parsed[0].viewMoreText = defaultTeam[0].viewMoreText;
+            parsed[0].specs = defaultTeam[0].specs;
+            try {
+              localStorage.setItem("infravision_team", JSON.stringify(parsed));
+            } catch {}
+          }
         }
         return parsed;
       }
