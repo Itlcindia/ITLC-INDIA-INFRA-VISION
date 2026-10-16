@@ -26,7 +26,6 @@ import {
   ExternalLink,
   RefreshCw,
   X,
-  Sparkles,
   ChevronRight,
   MapPin,
   Mail,
@@ -3334,6 +3333,18 @@ const TeamEditorView = ({
   const [linkedin, setLinkedin] = useState("");
   const [photo, setPhoto] = useState("https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600&auto=format&fit=crop");
 
+  // Lock background scroll when modal is open
+  useEffect(() => {
+    if (showAddMember) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showAddMember]);
+
   const handleOpenAddMember = () => {
     setEditingMember(null);
     setName("");
@@ -3545,10 +3556,16 @@ const TeamEditorView = ({
 
       {/* Add / Edit Member Modal */}
       {showAddMember && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md"
+          onClick={() => setShowAddMember(false)}
+          data-lenis-prevent="true"
+        >
           <form
             onSubmit={handleMemberSubmit}
-            className="w-full max-w-xl p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#081534] border-2 border-sky-400 ring-1 ring-sky-300/30 shadow-2xl text-slate-900 dark:text-white space-y-4 font-mono text-xs max-h-[92vh] overflow-y-auto no-scrollbar"
+            onClick={(e) => e.stopPropagation()}
+            data-lenis-prevent="true"
+            className="w-full max-w-xl p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#081534] border-2 border-sky-400 ring-1 ring-sky-300/30 shadow-2xl text-slate-900 dark:text-white space-y-4 font-mono text-xs max-h-[85vh] overflow-y-auto overscroll-contain no-scrollbar"
           >
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-sky-400/20 pb-3">
               <div>
@@ -3642,28 +3659,27 @@ const TeamEditorView = ({
               <div className="space-y-2.5 p-3 rounded-2xl bg-slate-100/70 dark:bg-black/25 border border-sky-400/30">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <label className="text-sky-700 dark:text-sky-300 font-mono text-xs uppercase font-bold flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Executive Dossier Bullet Lines (Shown in View Bio)</span>
+                    <label className="text-sky-700 dark:text-sky-300 font-mono text-xs uppercase font-bold">
+                      Executive Dossier Bullet Lines (Shown in View Bio)
                     </label>
                     <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                      Har point alag line me likhein. Brands (SLEEK, EVOK, etc.) auto-capitalized & green highlight honge.
+                      Har point alag line me likhein. Brands (SLEEK, EVOK, etc.) auto-capitalized & dark blue highlight honge.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setBioLines((prev) => [...prev, ""])}
-                    className="self-start sm:self-auto px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/40 text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
+                    className="self-start sm:self-auto px-2.5 py-1 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 border border-blue-400/40 text-blue-700 dark:text-sky-400 font-mono text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Line</span>
                   </button>
                 </div>
 
-                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                <div className="space-y-2 max-h-60 overflow-y-auto overscroll-contain pr-1" data-lenis-prevent="true">
                   {bioLines.map((line, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0 shadow-[0_0_8px_#10B981]" />
+                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-sky-400 shrink-0 shadow-[0_0_8px_#2563EB]" />
                       <span className="font-mono text-[10.5px] text-slate-500 dark:text-slate-400 font-bold shrink-0 w-12">
                         Line {idx + 1}:
                       </span>

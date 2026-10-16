@@ -16,8 +16,7 @@ import {
   ArrowUpRight,
   ExternalLink,
   X,
-  Award,
-  Sparkles
+  Award
 } from "lucide-react";
 import { Card3D } from "../components/ui/Card3D";
 import { BorderBeam } from "../components/ui/BorderBeam";
@@ -25,7 +24,7 @@ import { MagneticButton } from "../components/ui/MagneticButton";
 import { soundManager } from "../lib/sound";
 import { useCMS } from "../context/CMSContext";
 
-// Intelligent regex-driven editorial bio bullet lines formatter with vibrant green font highlights
+// Intelligent regex-driven editorial bio bullet lines formatter with dark blue font highlights
 const HIGHLIGHT_REGEX_STR = "(\\b\\d+\\+?\\s*years?(?:\\s+of)?(?:\\s+(?:industry\\s+)?experience)?\\b|reputed brands like|reputed brands\\b|(?:Sleek|HomeTown|EVOK|Hindware|Hettich|Hafele|Tata|TATA Tiscon|L&T|DLF|Godrej|Kohler|Jaquar|Saint-Gobain|Asian Paints|Ultratech|SPA Delhi|IIT Roorkee|Autodesk|INFRA VISION|ITLC India|ITLC)\\b|skilled in\\b|space planning|furniture design|material selection|specializing in\\b|residential|commercial|office interiors|quality|craftsmanship|client satisfaction|Interior Designer|Principal Spatial Architect|Chief Structural & Civil Site Engineer|Senior MEP & 3D BIM Director|Civil Site Engineer|BIM Director)";
 
 const SPLIT_HIGHLIGHT_REGEX = new RegExp(HIGHLIGHT_REGEX_STR, "gi");
@@ -163,7 +162,7 @@ const renderHighlightedBioText = (text) => {
       return (
         <span
           key={idx}
-          className="font-semibold text-emerald-600 dark:text-emerald-400"
+          className="font-bold text-blue-700 dark:text-sky-400"
         >
           {displayText}
         </span>
@@ -181,7 +180,7 @@ const formatBioWithHighlights = (rawText) => {
     <ul className="space-y-2.5">
       {bulletLines.map((line, lIdx) => (
         <li key={lIdx} className="flex items-start gap-2.5 text-left">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 shadow-[0_0_8px_#10B981] shrink-0 mt-1.5" />
+          <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-sky-400 shadow-[0_0_8px_#2563EB] shrink-0 mt-1.5" />
           <p className="flex-1 text-slate-700 dark:text-slate-200 text-xs sm:text-[13px] font-sans leading-relaxed text-left">
             {renderHighlightedBioText(line)}
           </p>
@@ -553,7 +552,7 @@ export const AboutPage = ({ onInquiryClick }) => {
             {/* Modal Header */}
             <div className="px-5 py-3 border-b border-slate-200 dark:border-sky-400/20 flex items-center justify-between bg-slate-50 dark:bg-black/20 shrink-0">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-sky-400 animate-ping" />
                 <span className="font-mono text-xs font-bold text-blue-600 dark:text-sky-400 uppercase tracking-wider">
                   OFFICIAL LEADERSHIP DOSSIER
                 </span>
@@ -596,7 +595,7 @@ export const AboutPage = ({ onInquiryClick }) => {
                     <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-sky-300 font-mono text-[11px] font-bold border border-blue-400/30">
                       {selectedMemberForModal.qualification || selectedMemberForModal.credentials || "B.Tech Civil"}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[11px] font-bold border border-emerald-400/30">
+                    <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-sky-300 font-mono text-[11px] font-bold border border-blue-400/30">
                       {selectedMemberForModal.experience || "10+ Years Exp"}
                     </span>
                     {selectedMemberForModal.linkedin && (
@@ -648,11 +647,10 @@ export const AboutPage = ({ onInquiryClick }) => {
               {/* View More Full Narrative with Dynamic Editorial Bullet Lines */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-mono text-xs font-bold text-slate-500 dark:text-sky-400 uppercase tracking-widest flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>EXECUTIVE PROFILE & CREDENTIALS</span>
+                  <h4 className="font-mono text-xs font-bold text-slate-500 dark:text-sky-400 uppercase tracking-widest">
+                    EXECUTIVE PROFILE & CREDENTIALS
                   </h4>
-                  <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-400/30 px-2 py-0.5 rounded-full font-bold">
+                  <span className="font-mono text-[10px] text-blue-700 dark:text-sky-400 bg-blue-500/10 border border-blue-400/30 px-2 py-0.5 rounded-full font-bold">
                     VERIFIED BULLET RECORD
                   </span>
                 </div>
