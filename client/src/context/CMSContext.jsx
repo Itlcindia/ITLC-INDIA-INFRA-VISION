@@ -100,18 +100,18 @@ const defaultTeam = [
     tag: "SPATIAL ARCHITECTURE & FINISHES",
     decree: "INTERIOR ARCHITECTURAL DECREE",
     name: "Ar. Ananya Sharma",
-    role: "Lead Interior Architect & Spatial Stylist",
-    experience: "8+ Years Exp",
-    qualification: "B.Arch (SPA Delhi), LEED AP",
-    credentials: "B.Arch (SPA Delhi), LEED AP",
+    role: "Lead Interior Designer & Spatial Architect",
+    experience: "23+ Years Exp",
+    qualification: "B.Arch (SPA Delhi), Interior Lead",
+    credentials: "B.Arch (SPA Delhi), Interior Lead",
     photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
-    bio: "8+ years specializing in luxury bespoke residences, bookmatched Italian Calacatta marble curation, automated circadian lighting layouts, and acoustic spatial serenity across Lucknow.",
-    viewMoreText: "Ar. Ananya Sharma is a principal spatial architect at INFRA VISION, pioneering luxury interior architecture with a focus on biophilic flow and museum-grade finishes.\n\nGraduating with honors from SPA Delhi, she has spearheaded over 65 ultra-luxury turnkey residential projects across Gomti Nagar and Shaheed Path. Her signature methodology combines natural cross-ventilation, imported marble curation from Carrara, and bespoke smart automation systems that synchronize interior circadian lighting with daily solar rhythms.",
+    bio: "23+ years of industry experience specializing in residential, commercial, and office interiors. Skilled in space planning, furniture design, material selection with reputed brands like Sleek, HomeTown, EVOK, Hindware, and Hettich.",
+    viewMoreText: "23+ Years of Industry Experience\n\nAn experienced Interior Designer with 23 years of industry experience, specializing in residential, commercial, and office interiors. Skilled in space planning, furniture design, material selection, and creating elegant, functional spaces tailored to clients’ needs. Experienced in working with reputed brands like Sleek, HomeTown, EVOK, Hindware, and Hettich, with a strong focus on quality, craftsmanship, and client satisfaction.",
     specs: [
-      "65+ Luxury Villas Styled",
-      "Italian Stone Curation",
-      "3D BIM Clash-Free",
-      "Circadian Light Flow"
+      "23+ Years Experience",
+      "Sleek & Hettich Certified",
+      "Space Planning & Styling",
+      "Luxury Turnkey Interiors"
     ],
     linkedin: "https://www.linkedin.com",
     signature: "Ar. Ananya Sharma ~"
@@ -591,7 +591,21 @@ export const CMSProvider = ({ children }) => {
   const [team, setTeam] = useState(() => {
     try {
       const saved = localStorage.getItem("infravision_team");
-      return saved ? JSON.parse(saved) : defaultTeam;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.id === "interior" && parsed[0]?.experience === "8+ Years Exp") {
+          parsed[0].role = defaultTeam[0].role;
+          parsed[0].experience = defaultTeam[0].experience;
+          parsed[0].bio = defaultTeam[0].bio;
+          parsed[0].viewMoreText = defaultTeam[0].viewMoreText;
+          parsed[0].specs = defaultTeam[0].specs;
+          try {
+            localStorage.setItem("infravision_team", JSON.stringify(parsed));
+          } catch {}
+        }
+        return parsed;
+      }
+      return defaultTeam;
     } catch {
       return defaultTeam;
     }

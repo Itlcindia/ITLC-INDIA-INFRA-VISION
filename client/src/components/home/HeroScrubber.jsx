@@ -9,6 +9,10 @@ export const HeroScrubber = ({ onExploreClick, onCalculatorClick }) => {
   const animFrameRef = useRef(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
+  // Autoplay and user interaction tracking
+  const isAutoplayingRef = useRef(true);
+  const hasUserInteractedRef = useRef(false);
+
   // 3 Construction Lifecycle Stages
   const stages = [
     {
@@ -76,6 +80,17 @@ export const HeroScrubber = ({ onExploreClick, onCalculatorClick }) => {
   // Direct scroll calculation matching live site
   const handleScroll = () => {
     if (!containerRef.current || !videoRef.current) return;
+
+    // If user has scrolled down past initial threshold, immediately stop autoplay
+    if (window.scrollY > 15 && isAutoplayingRef.current) {
+      isAutoplayingRef.current = false;
+      hasUserInteractedRef.current = true;
+      videoRef.current.pause();
+    }
+
+    // While autoplay is active at top of page, scroll calculation should not fight video playback
+    if (isAutoplayingRef.current) return;
+
     const rect = containerRef.current.getBoundingClientRect();
     const height = rect.height;
     const winH = window.innerHeight;
@@ -97,37 +112,101 @@ export const HeroScrubber = ({ onExploreClick, onCalculatorClick }) => {
     }
   };
 
+  // Helper to start smooth balanced autoplay on initial load
+  const startAutoplay = () => {
+    const video = videoRef.current;
+    if (!video || hasUserInteractedRef.current) return;
+
+    if (window.scrollY > 25) {
+      isAutoplayingRef.current = false;
+      hasUserInteractedRef.current = true;
+      handleScroll();
+      return;
+    }
+
+    isAutoplayingRef.current = true;
+    video.playbackRate = 0.9; // Balanced cinematic speed so all stages are clearly observable
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay may be restricted if browser requires user gesture
+        isAutoplayingRef.current = false;
+      });
+    }
+  };
+
+  // Helper to stop autoplay permanently and transition to scroll scrubbing
+  const stopAutoplayAndSwitchToScroll = () => {
+    if (isAutoplayingRef.current) {
+      isAutoplayingRef.current = false;
+      hasUserInteractedRef.current = true;
+      const video = videoRef.current;
+      if (video) {
+        video.pause();
+      }
+    }
+  };
+
+  // User input listener (wheel, touchmove, keys)
+  const onUserInteraction = () => {
+    if (isAutoplayingRef.current) {
+      stopAutoplayAndSwitchToScroll();
+      handleScroll();
+    }
+  };
+
+  // Continuous sync of progress indicators during autoplay
+  const handleTimeUpdate = () => {
+    if (isAutoplayingRef.current && videoRef.current) {
+      const video = videoRef.current;
+      if (video.duration > 0) {
+        const pct = Math.min(100, Math.round((video.currentTime / video.duration) * 100));
+        setProgressPercent(pct);
+      }
+    }
+  };
+
+  // When video completes its autoplay run naturally
+  const handleVideoEnded = () => {
+    if (isAutoplayingRef.current) {
+      isAutoplayingRef.current = false;
+      setProgressPercent(100);
+    }
+  };
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     video.preload = "auto";
-    video.pause();
 
-    // ⭐️ Live site warm-up trick: prime hardware decoder on first user interaction
-    const warmUp = () => {
-      if (video.paused) {
-        video
-          .play()
-          .then(() => {
-            video.pause();
-          })
-          .catch(() => {});
-        window.removeEventListener("touchstart", warmUp);
-        window.removeEventListener("scroll", warmUp);
+    // Check if initial scroll is at top
+    if (window.scrollY <= 25) {
+      startAutoplay();
+    } else {
+      isAutoplayingRef.current = false;
+      hasUserInteractedRef.current = true;
+      handleScroll();
+    }
+
+    // Interaction listeners: any scroll, wheel, or touch will cancel autoplay and switch to scroll
+    const onWheel = () => onUserInteraction();
+    const onTouchMove = () => onUserInteraction();
+    const onKeyDown = (e) => {
+      if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Space"].includes(e.code)) {
+        onUserInteraction();
       }
     };
 
-    window.addEventListener("touchstart", warmUp, { passive: true });
-    window.addEventListener("scroll", warmUp, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("keydown", onKeyDown, { passive: true });
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // Initial position
-    handleScroll();
-
     return () => {
-      window.removeEventListener("touchstart", warmUp);
-      window.removeEventListener("scroll", warmUp);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("scroll", handleScroll);
       if (animFrameRef.current) {
         cancelAnimationFrame(animFrameRef.current);
@@ -168,13 +247,17 @@ export const HeroScrubber = ({ onExploreClick, onCalculatorClick }) => {
                 ref={videoRef}
                 src="/videos/hero_construction_smooth.mp4"
                 muted
+                autoPlay
                 playsInline
                 preload="auto"
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={handleVideoEnded}
                 onLoadedMetadata={() => {
-                  if (videoRef.current) {
-                    videoRef.current.currentTime = 0;
+                  if (window.scrollY <= 25 && !hasUserInteractedRef.current) {
+                    startAutoplay();
+                  } else {
+                    handleScroll();
                   }
-                  handleScroll();
                 }}
                 className="w-full h-full object-cover object-center"
               />
