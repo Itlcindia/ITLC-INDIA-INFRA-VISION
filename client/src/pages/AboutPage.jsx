@@ -413,17 +413,13 @@ export const AboutPage = ({ onInquiryClick }) => {
       {/* 4. ELITE ENGINEERING & DESIGN LEADERSHIP (MODERN EDITORIAL SHOWCASE) */}
       <div id="my-team" className="space-y-8 scroll-mt-28">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div className="space-y-2 text-center sm:text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 dark:bg-sky-400/10 border border-blue-400/30 text-blue-600 dark:text-sky-300 text-xs font-mono font-semibold">
-              <Users className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
-              <span>LEADERSHIP & ARCHITECTURAL CADRE</span>
-            </div>
-            <h2 className="font-display text-[26px] sm:text-[32px] font-bold tracking-tight text-slate-900 dark:text-white">
-              Architects of Legacy, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-500 dark:from-sky-400 dark:via-blue-400 dark:to-cyan-300">Masters of Civil Execution</span>
+          <div className="text-center sm:text-left">
+            <h2 className="font-display text-[26px] sm:text-[32px] font-bold tracking-tight uppercase">
+              <span className="text-blue-700 dark:text-sky-300">Our</span>{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-500 dark:from-sky-400 dark:via-blue-400 dark:to-cyan-300">
+                Team
+              </span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-sans max-w-2xl">
-              A multidisciplinary leadership team bridging architectural imagination with IS-456 structural durability. Tap "View Dossier" to explore each specialist's full background.
-            </p>
           </div>
         </div>
 
