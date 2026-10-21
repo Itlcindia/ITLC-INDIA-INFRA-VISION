@@ -7,17 +7,250 @@ import {
   Compass,
   CheckCircle2,
   Send,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Layers,
+  Building2,
 } from "lucide-react";
 import { BorderBeam } from "../components/ui/BorderBeam";
 import { MagneticButton } from "../components/ui/MagneticButton";
 import { soundManager } from "../lib/sound";
 import { allInteriorSpaces } from "../components/home/InteriorExcellence";
-import { useCMS } from "../context/CMSContext";
+import { useCMS, defaultInteriorProjects } from "../context/CMSContext";
+
+// Reusable Single-Card Interactive Project Slider for Team Members (e.g. Asmita Gupta)
+const TeamMemberProjectsSlider = ({
+  projects = [],
+  memberName = "Asmita Gupta",
+  experienceTag = "20+ Years Excellence in Interior Design",
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [photoIndex, setPhotoIndex] = useState(0);
+
+  if (!projects || projects.length === 0) return null;
+
+  const safeIndex = Math.min(currentIndex, projects.length - 1);
+  const currentProject = projects[safeIndex];
+
+  // Multiple image resolution (array or single string, or optional/empty)
+  const projectImages = Array.isArray(currentProject.images) && currentProject.images.length > 0
+    ? currentProject.images.filter(Boolean)
+    : (currentProject.image ? [currentProject.image] : []);
+
+  const safePhotoIndex = projectImages.length > 0 ? Math.min(photoIndex, projectImages.length - 1) : 0;
+  const currentPhoto = projectImages[safePhotoIndex] || null;
+
+  const handleNext = () => {
+    soundManager?.playHapticClick?.(650);
+    setCurrentIndex((prev) => (prev + 1) % projects.length);
+    setPhotoIndex(0);
+  };
+
+  const handlePrev = () => {
+    soundManager?.playHapticClick?.(600);
+    setCurrentIndex((prev) => (prev - 1 + projects.length) % projects.length);
+    setPhotoIndex(0);
+  };
+
+  // Bullet specs extracted from dropdownDetails or specs
+  const bulletLines = String(currentProject.dropdownDetails || "")
+    .split("\n")
+    .map((l) => l.replace(/^[•\-\*]\s*/, "").trim())
+    .filter(Boolean);
+
+  return (
+    <div id="designer-projects" className="scroll-mt-28 space-y-6">
+      {/* Section Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 dark:bg-sky-400/10 border border-blue-400/30 text-blue-600 dark:text-sky-300 text-xs font-mono font-semibold">
+            <Building2 className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
+            <span>SIGNATURE DELIVERED PROJECTS</span>
+          </div>
+          <h2 className="font-display text-[24px] sm:text-[30px] font-bold tracking-tight text-slate-900 dark:text-white uppercase">
+            Delivered Projects by <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-500 dark:from-sky-400 dark:via-blue-400 dark:to-cyan-300">{memberName}</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-sans max-w-2xl">
+            Turnkey architectural commissions across institutional, luxury residential, and commercial sectors executed with precision space planning and branded modular systems.
+          </p>
+        </div>
+
+        {/* Counter Badge */}
+        <div className="font-mono text-xs font-bold px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-sky-500/10 border border-blue-200 dark:border-sky-400/30 text-blue-700 dark:text-sky-300 shrink-0 self-start sm:self-end">
+          PROJECT {String(safeIndex + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+        </div>
+      </div>
+
+      {/* Unified Single Card Container (Balanced Compact Height ~380px) */}
+      <div className="relative rounded-3xl bg-white/95 dark:bg-gradient-to-br dark:from-[#0E204A] dark:via-[#0A1A3C] dark:to-[#06122C] border-2 border-slate-200/90 dark:border-sky-400/35 shadow-xl shadow-blue-900/5 dark:shadow-2xl overflow-hidden ring-1 ring-blue-100/50 dark:ring-sky-300/15">
+        <div className="flex flex-col md:flex-row items-stretch min-h-[360px] md:h-[390px]">
+          {/* Left: Project Image Zone */}
+          <div className="relative w-full md:w-[44%] lg:w-[46%] h-[230px] sm:h-[260px] md:h-full overflow-hidden bg-slate-900 border-b md:border-b-0 md:border-r border-slate-200 dark:border-sky-400/25 shrink-0">
+            <AnimatePresence mode="wait">
+              {currentPhoto ? (
+                <motion.div
+                  key={`${currentProject.id}_${safePhotoIndex}`}
+                  initial={{ opacity: 0, scale: 1.03 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="w-full h-full relative"
+                >
+                  <img
+                    src={currentPhoto}
+                    alt={currentProject.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                </motion.div>
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-slate-900 via-blue-950 to-black text-sky-300">
+                  <Building2 className="w-12 h-12 mb-3 text-sky-400/70" />
+                  <span className="font-display text-sm font-bold tracking-wider uppercase text-white">
+                    Architectural Commission
+                  </span>
+                  <span className="font-mono text-[11px] text-sky-300/70 mt-1">
+                    Spatial Planning & Modular Execution
+                  </span>
+                </div>
+              )}
+            </AnimatePresence>
+
+            {/* Category Badge overlay */}
+            <div className="absolute top-3.5 left-3.5 z-10">
+              <span className="bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 font-mono text-[10px] text-sky-300 font-bold uppercase shadow-sm">
+                {currentProject.category}
+              </span>
+            </div>
+
+            {/* If project has multiple photos, show photo dots inside the image */}
+            {projectImages.length > 1 && (
+              <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15">
+                <span className="text-[10px] font-mono text-sky-200 mr-1">
+                  Photo {safePhotoIndex + 1}/{projectImages.length}
+                </span>
+                {projectImages.map((_, pIdx) => (
+                  <button
+                    key={pIdx}
+                    type="button"
+                    onClick={() => {
+                      soundManager?.playHapticClick?.(700);
+                      setPhotoIndex(pIdx);
+                    }}
+                    className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                      safePhotoIndex === pIdx ? "w-4 bg-sky-400" : "w-1.5 bg-white/40 hover:bg-white/70"
+                    }`}
+                    title={`View photo ${pIdx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right: Content & Controls Zone */}
+          <div className="flex-1 flex flex-col justify-between p-5 sm:p-6 lg:p-7 space-y-4">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentProject.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-3 flex-1"
+              >
+                {/* Member credit line */}
+                <div className="flex items-center gap-2 text-[10.5px] font-mono text-slate-500 dark:text-sky-300/80">
+                  <span className="font-semibold text-blue-600 dark:text-sky-400 uppercase tracking-wider">{memberName}</span>
+                  <span>•</span>
+                  <span>{experienceTag}</span>
+                </div>
+
+                {/* Project Title */}
+                <h3 className="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-snug">
+                  {currentProject.title}
+                </h3>
+
+                {/* Short summary description */}
+                <p className="text-xs sm:text-[13px] text-slate-600 dark:text-gray-300 leading-relaxed font-sans line-clamp-2">
+                  {currentProject.shortDesc || currentProject.description}
+                </p>
+
+                {/* Specifications & Highlights (Directly integrated, no dropdown clutter) */}
+                {bulletLines.length > 0 && (
+                  <div className="pt-1.5 space-y-1.5">
+                    {bulletLines.slice(0, 3).map((spec, sIdx) => (
+                      <div key={sIdx} className="flex items-start gap-2 text-xs text-slate-700 dark:text-gray-200">
+                        <span className="text-blue-600 dark:text-sky-400 font-bold shrink-0 mt-0.5">•</span>
+                        <span className="leading-relaxed line-clamp-1">{spec}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Bottom Controls Bar with Forward / Backward Arrows */}
+            <div className="pt-3.5 border-t border-slate-200 dark:border-sky-400/20 flex items-center justify-between gap-4">
+              {/* Slide Dots */}
+              <div className="flex items-center gap-1.5">
+                {projects.map((_, dIdx) => (
+                  <button
+                    key={dIdx}
+                    type="button"
+                    onClick={() => {
+                      soundManager?.playHapticClick?.(600);
+                      setCurrentIndex(dIdx);
+                      setPhotoIndex(0);
+                    }}
+                    className={`h-2 rounded-full transition-all cursor-pointer ${
+                      safeIndex === dIdx
+                        ? "w-6 bg-gradient-to-r from-blue-600 to-sky-500 dark:from-sky-400 dark:to-blue-400 shadow-sm"
+                        : "w-2 bg-slate-300 dark:bg-white/20 hover:bg-slate-400 dark:hover:bg-white/40"
+                    }`}
+                    title={`Go to project ${dIdx + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Prev & Next Arrow Buttons */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-sky-500/15 dark:hover:bg-sky-500/30 border border-slate-200 dark:border-sky-400/30 text-slate-700 dark:text-sky-300 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-sm"
+                  aria-label="Previous project"
+                  title="Previous project"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-md shadow-sky-500/25"
+                  aria-label="Next project"
+                  title="Next project"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const InteriorPage = ({ onInquiryClick }) => {
-  const { interior } = useCMS();
+  const { interior, interiorProjects } = useCMS();
   const [inspectItem, setInspectItem] = useState(null);
   const [filter, setFilter] = useState("all");
+
+  const displayDesignerProjects = Array.isArray(interiorProjects) && interiorProjects.length > 0
+    ? interiorProjects
+    : defaultInteriorProjects;
 
   const activeSpaces = Array.isArray(interior) ? interior : allInteriorSpaces;
 
@@ -186,6 +419,13 @@ export const InteriorPage = ({ onInquiryClick }) => {
         )}
       </div>
       </div>
+
+      {/* 3.1 SIGNATURE DELIVERED PROJECTS SHOWCASE (SINGLE-CARD SLIDER) */}
+      <TeamMemberProjectsSlider
+        projects={displayDesignerProjects}
+        memberName="Asmita Gupta"
+        experienceTag="20+ Years Excellence in Interior Design"
+      />
 
       {/* 4. EXECUTION METHODOLOGY */}
       <div className="p-8 sm:p-12 rounded-3xl bg-white/95 dark:bg-gradient-to-b dark:from-[#0F224D] dark:via-[#0B1A3C] dark:to-[#061026] border border-slate-200/90 dark:border-sky-400/35 shadow-xl shadow-blue-900/5 dark:shadow-2xl dark:shadow-black/85 ring-1 ring-slate-200/50 dark:ring-sky-300/20 space-y-8">

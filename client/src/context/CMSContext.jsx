@@ -97,24 +97,31 @@ const defaultTeam = [
     id: "interior",
     badgeTitle: "INTERIOR",
     badgeSub: "DESIGNER",
-    tag: "SPATIAL ARCHITECTURE & FINISHES",
+    tag: "MODULAR KITCHEN & INTERIOR LEAD",
     decree: "INTERIOR ARCHITECTURAL DECREE",
-    name: "Ar. Ananya Sharma",
-    role: "Lead Interior Designer & Spatial Architect",
-    experience: "23+ Years Exp",
-    qualification: "B.Arch (SPA Delhi), Interior Lead",
-    credentials: "B.Arch (SPA Delhi), Interior Lead",
+    name: "Asmita Gupta",
+    role: "Lead Interior Designer & Modular Specialist",
+    experience: "20+ Years Exp",
+    experienceDetail: "20+ Years Experience in Interior Design",
+    qualification: "Diploma in Interior Designing (NIFD), Vastu & CAD Lead",
+    credentials: "Diploma in Interior Designing (NIFD), Vastu & CAD Lead",
     photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
-    bio: "23+ years of industry experience specializing in residential, commercial, and office interiors. Skilled in space planning, furniture design, material selection with reputed brands like SLEEK, HOMETOWN, EVOK, HINDWARE, and HETTICH.",
-    viewMoreText: "An experienced Interior Designer with 23 years of industry experience\nSpecializing in residential, commercial, and office interiors\nSkilled in space planning, furniture design, material selection, and creating elegant, functional spaces tailored to clients’ needs\nExperienced in working with reputed brands like SLEEK, HOMETOWN, EVOK, HINDWARE, and HETTICH\nWith a strong focus on quality, craftsmanship, and client satisfaction",
+    bio: "Over 20 years of expertise across modular kitchen design, residential interiors, and turnkey space execution with reputed brands like SLEEK, HETTICH, and EVOK.",
+    viewMoreText: "Senior Interior Designer with over 20 years of specialized expertise in modular kitchens and turnkey interiors\nSkilled in space planning, material curation, and end-to-end site execution with Shubhakriti Construction\nFormer Application Centre In-Charge at HETTICH India and Team Leader at EVOK, Hindware Retail\nExperienced in working with tier-1 reputed brands like SLEEK, HOMETOWN, EVOK, HINDWARE, and HETTICH\nProven track record across educational institutions, multi-unit apartments, and luxury residential projects",
     specs: [
-      "23+ Years Experience",
-      "SLEEK & HETTICH Certified",
-      "Space Planning & Styling",
-      "Luxury Turnkey Interiors"
+      "20+ Years Experience",
+      "SLEEK, HETTICH & EVOK Lead",
+      "Modular Kitchens & Joinery",
+      "NIFD Certified & Vastu Diploma"
+    ],
+    projects: [
+      "Lord Shiva International School",
+      "Azia Botanica (Multi-Unit Luxury)",
+      "Car Detailing Center, Faizabad Road",
+      "RTO AGRA / SGPGI Luxury Residential"
     ],
     linkedin: "https://www.linkedin.com",
-    signature: "Ar. Ananya Sharma ~"
+    signature: "Asmita Gupta ~"
   },
   {
     id: "civil",
@@ -162,6 +169,54 @@ const defaultTeam = [
     linkedin: "https://www.linkedin.com",
     signature: "Er. Sameer Khan ~"
   }
+];
+
+// Default Designer / Interior Delivered Projects (Asmita Gupta & Turnkey Showcase)
+export const defaultInteriorProjects = [
+  {
+    id: "proj_1",
+    teamMemberId: "interior",
+    designer: "Asmita Gupta",
+    title: "Lord Shiva International School",
+    category: "Institutional & Educational",
+    shortDesc: "High-traffic educational space planning prioritizing student safety, ergonomic circulation, and durable finish selection.",
+    image: "/images/interior/staircase_lobby.jpg",
+    images: ["/images/interior/staircase_lobby.jpg"],
+    dropdownDetails: "• Functional Space Planning: High-traffic layouts prioritizing student safety and optimal space utilization.\n• Aesthetic & Brand Integration: Tailored vibrant color schemes encouraging modern learning standards.\n• Execution Scope: Comprehensive planning of classroom ergonomics, administrative wings, library, and activity zones.",
+  },
+  {
+    id: "proj_2",
+    teamMemberId: "interior",
+    designer: "Asmita Gupta",
+    title: "Azia Botanica, ASDM",
+    category: "Multi-Unit Luxury Residential",
+    shortDesc: "Comprehensive turnkey interior layouts for luxury multi-unit residences integrating custom cabinetry, space-saving joinery, and functional ambient lighting.",
+    image: "/images/interior/luxury_living.jpg",
+    images: ["/images/interior/luxury_living.jpg"],
+    dropdownDetails: "• Turnkey Living Solutions: Custom cabinetry, space-saving modular joinery, and ambient circadian lighting.\n• Surface Optimization: Sleek, low-maintenance materials tailored for modern luxury living and dining environments.\n• Brand Integration: Precision modular fittings and architectural hardware with SLEEK and HETTICH systems.",
+  },
+  {
+    id: "proj_3",
+    teamMemberId: "interior",
+    designer: "Asmita Gupta",
+    title: "Car Detailing Center @ Faizabad Road",
+    category: "Commercial & Specialized Outlets",
+    shortDesc: "Durable industrial-grade commercial layouts engineered for heavy-load equipment, moisture resistance, and precision task lighting.",
+    image: "/images/interior/private_terrace.jpg",
+    images: ["/images/interior/private_terrace.jpg"],
+    dropdownDetails: "• Technical & Utility Integration: High-load machinery placement, moisture-resistant industrial floor and wall treatments.\n• Branded Commercial Aesthetic: Seamless fusion of rugged operational utility with clean client-facing visual branding.\n• Lighting Engineering: High-CRI task illumination engineered specifically for detail-oriented inspection.",
+  },
+  {
+    id: "proj_4",
+    teamMemberId: "interior",
+    designer: "Asmita Gupta",
+    title: "RTO AGRA / SGPGI Residential Projects",
+    category: "Large-Scale Luxury Residential Planning",
+    shortDesc: "Extensive high-square-footage private residential planning with seamless indoor-to-outdoor transitions and luxury false ceiling detailing.",
+    image: "/images/interior/master_bedroom.jpg",
+    images: ["/images/interior/master_bedroom.jpg"],
+    dropdownDetails: "• Luxury Spatial Synergy: Seamless indoor living to open terrace transitions, false ceiling designs, and custom landscape views.\n• End-to-End Execution: False ceilings, bespoke millwork, and site coordination from grey structure to final turnkey fit-out.\n• Curated Finishes: Premium Italian stone cladding, custom POP layouts, and acoustic fluted panels.",
+  },
 ];
 
 // Default About Content
@@ -587,6 +642,20 @@ export const CMSProvider = ({ children }) => {
     }
   });
 
+  // Designer / Interior Delivered Projects Showcase
+  const [interiorProjects, setInteriorProjects] = useState(() => {
+    try {
+      const saved = localStorage.getItem("infravision_interior_projects");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      return defaultInteriorProjects;
+    } catch {
+      return defaultInteriorProjects;
+    }
+  });
+
   // Team State
   const [team, setTeam] = useState(() => {
     try {
@@ -594,16 +663,19 @@ export const CMSProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.id === "interior") {
-          if (parsed[0]?.experience === "8+ Years Exp" || !parsed[0]?.viewMoreText?.includes("SLEEK")) {
-            parsed[0].role = defaultTeam[0].role;
-            parsed[0].experience = defaultTeam[0].experience;
-            parsed[0].bio = defaultTeam[0].bio;
-            parsed[0].viewMoreText = defaultTeam[0].viewMoreText;
-            parsed[0].specs = defaultTeam[0].specs;
-            try {
-              localStorage.setItem("infravision_team", JSON.stringify(parsed));
-            } catch {}
-          }
+          parsed[0].name = defaultTeam[0].name;
+          parsed[0].role = defaultTeam[0].role;
+          parsed[0].experience = defaultTeam[0].experience;
+          parsed[0].experienceDetail = defaultTeam[0].experienceDetail;
+          parsed[0].qualification = defaultTeam[0].qualification;
+          parsed[0].credentials = defaultTeam[0].credentials;
+          parsed[0].bio = defaultTeam[0].bio;
+          parsed[0].viewMoreText = defaultTeam[0].viewMoreText;
+          parsed[0].specs = defaultTeam[0].specs;
+          parsed[0].projects = defaultTeam[0].projects;
+          try {
+            localStorage.setItem("infravision_team", JSON.stringify(parsed));
+          } catch {}
         }
         return parsed;
       }
@@ -793,6 +865,13 @@ export const CMSProvider = ({ children }) => {
       syncToBackend("interior", interior);
     } catch {}
   }, [interior]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("infravision_interior_projects", JSON.stringify(interiorProjects));
+      syncToBackend("interiorProjects", interiorProjects);
+    } catch {}
+  }, [interiorProjects]);
 
   useEffect(() => {
     try {
@@ -1184,6 +1263,11 @@ export const CMSProvider = ({ children }) => {
   const addInteriorSpace = (item) => setInterior((prev) => [...prev, item]);
   const updateInteriorSpace = (updated) => setInterior((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
   const deleteInteriorSpace = (id) => setInterior((prev) => prev.filter((i) => i.id !== id));
+
+  // Designer / Interior Delivered Projects Showcase
+  const addInteriorProject = (item) => setInteriorProjects((prev) => [item, ...prev]);
+  const updateInteriorProject = (updated) => setInteriorProjects((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+  const deleteInteriorProject = (id) => setInteriorProjects((prev) => prev.filter((p) => p.id !== id));
 
   // Team
   const addTeamMember = (member) => setTeam((prev) => [...prev, member]);
@@ -1599,6 +1683,11 @@ CREATE TABLE \`tbl_login_attempts\` (
         addInteriorSpace,
         updateInteriorSpace,
         deleteInteriorSpace,
+        interiorProjects,
+        setInteriorProjects,
+        addInteriorProject,
+        updateInteriorProject,
+        deleteInteriorProject,
         team,
         setTeam,
         addTeamMember,
@@ -1643,7 +1732,20 @@ CREATE TABLE \`tbl_login_attempts\` (
 export const useCMS = () => {
   const ctx = useContext(CMSContext);
   if (!ctx) {
-    throw new Error("useCMS must be used within a CMSProvider");
+    return {
+      interiorProjects: defaultInteriorProjects,
+      services: [],
+      projects: [],
+      interior: [],
+      siteImages: [],
+      news: [],
+      brandPartners: [],
+      team: [],
+      inquiries: [],
+      homeContent: {},
+      aboutContent: {},
+      contactContent: {},
+    };
   }
   return ctx;
 };

@@ -27,6 +27,7 @@ import {
   RefreshCw,
   X,
   ChevronRight,
+  ChevronDown,
   MapPin,
   Mail,
   Phone,
@@ -92,6 +93,10 @@ export const AdminPage = ({ onRouteChange }) => {
     addInteriorSpace,
     updateInteriorSpace,
     deleteInteriorSpace,
+    interiorProjects,
+    addInteriorProject,
+    updateInteriorProject,
+    deleteInteriorProject,
     team,
     addTeamMember,
     updateTeamMember,
@@ -1077,6 +1082,10 @@ export const AdminPage = ({ onRouteChange }) => {
                 addInteriorSpace={addInteriorSpace}
                 updateInteriorSpace={updateInteriorSpace}
                 deleteInteriorSpace={deleteInteriorSpace}
+                interiorProjects={interiorProjects}
+                addInteriorProject={addInteriorProject}
+                updateInteriorProject={updateInteriorProject}
+                deleteInteriorProject={deleteInteriorProject}
                 processImageFile={processImageFile}
                 triggerToast={triggerToast}
               />
@@ -2944,118 +2953,503 @@ const ProjectsEditorView = ({
 };
 
 // ==========================================
-// SUB-COMPONENT: INTERIOR EDITOR (GALLERY UPLOAD)
+// SUB-COMPONENT: INTERIOR EDITOR (GALLERY & DELIVERED PROJECTS)
 // ==========================================
 const InteriorEditorView = ({
-  interior,
+  interior = [],
   addInteriorSpace,
   updateInteriorSpace,
   deleteInteriorSpace,
+  interiorProjects = [],
+  addInteriorProject,
+  updateInteriorProject,
+  deleteInteriorProject,
   processImageFile,
   triggerToast,
 }) => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newCategory, setNewCategory] = useState("Living Suite");
-  const [newParagraph, setNewParagraph] = useState("");
-  const [newImage, setNewImage] = useState("/images/interior/living_room.jpg");
+  const [activeTab, setActiveTab] = useState("projects"); // "projects" or "spaces"
 
-  const handleUploadPhoto = async (e) => {
+  // 1. Master Spaces State
+  const [showAddSpaceModal, setShowAddSpaceModal] = useState(false);
+  const [newSpaceTitle, setNewSpaceTitle] = useState("");
+  const [newSpaceCategory, setNewSpaceCategory] = useState("Living Suite");
+  const [newSpaceParagraph, setNewSpaceParagraph] = useState("");
+  const [newSpaceImage, setNewSpaceImage] = useState("/images/interior/living_room.jpg");
+
+  // 2. Designer Delivered Projects State
+  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
+  const [projTitle, setProjTitle] = useState("");
+  const [projCategory, setProjCategory] = useState("");
+  const [projShortDesc, setProjShortDesc] = useState("");
+  const [projImages, setProjImages] = useState([]);
+  const [projDropdownDetails, setProjDropdownDetails] = useState("");
+
+  const handleUploadSpacePhoto = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
       const dataUrl = await processImageFile(file);
-      setNewImage(dataUrl);
+      setNewSpaceImage(dataUrl);
       triggerToast("Interior photo loaded from gallery!");
     } catch (err) {
       alert("Error reading file: " + err.message);
     }
   };
 
-  const handleAddSubmit = (e) => {
+  const handleUploadProjectPhotos = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    try {
+      const processed = await Promise.all(files.map((f) => processImageFile(f)));
+      setProjImages((prev) => [...prev, ...processed]);
+      triggerToast(`Added ${files.length} photo(s) from gallery!`);
+    } catch (err) {
+      alert("Error reading photos: " + err.message);
+    }
+  };
+
+  const handleRemoveProjectPhoto = (indexToRemove) => {
+    setProjImages((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const handleAddSpaceSubmit = (e) => {
     e.preventDefault();
     const newSpace = {
       id: "interior_" + Date.now(),
       number: "0" + (interior.length + 1),
-      title: newTitle || "LUXURY INTERIOR SUITE",
-      category: newCategory,
-      image: newImage,
-      paragraph: newParagraph || "Bespoke interior architectural space featuring premium materials and circadian lighting.",
+      title: newSpaceTitle || "LUXURY INTERIOR SUITE",
+      category: newSpaceCategory,
+      image: newSpaceImage,
+      paragraph: newSpaceParagraph || "Bespoke interior architectural space featuring premium materials and circadian lighting.",
     };
-    addInteriorSpace(newSpace);
-    setShowAddModal(false);
-    setNewTitle("");
-    setNewParagraph("");
+    addInteriorSpace && addInteriorSpace(newSpace);
+    setShowAddSpaceModal(false);
+    setNewSpaceTitle("");
+    setNewSpaceParagraph("");
     triggerToast(`Added interior space "${newSpace.title}"!`);
+  };
+
+  const handleOpenAddProject = () => {
+    setEditingProject(null);
+    setProjTitle("");
+    setProjCategory("Institutional & Educational");
+    setProjShortDesc("");
+    setProjImages(["/images/interior/staircase_lobby.jpg"]);
+    setProjDropdownDetails("• Space Planning: Tailored circulation flow and ergonomic layout.\n• Execution: Turnkey joinery and premium hardware integration.\n• Finishes: Durable, low-maintenance architectural materials.");
+    setShowProjectModal(true);
+  };
+
+  const handleOpenEditProject = (item) => {
+    setEditingProject(item);
+    setProjTitle(item.title || "");
+    setProjCategory(item.category || "Luxury Residential");
+    setProjShortDesc(item.shortDesc || item.description || "");
+    const existingImages = Array.isArray(item.images) && item.images.length > 0
+      ? item.images.filter(Boolean)
+      : (item.image ? [item.image] : []);
+    setProjImages(existingImages);
+    setProjDropdownDetails(item.dropdownDetails || "");
+    setShowProjectModal(true);
+  };
+
+  const handleProjectSubmit = (e) => {
+    e.preventDefault();
+    if (!projTitle.trim()) {
+      alert("Please enter a project title");
+      return;
+    }
+
+    const cleanImages = projImages.filter(Boolean);
+    const primaryImage = cleanImages[0] || "";
+
+    if (editingProject) {
+      const updated = {
+        ...editingProject,
+        title: projTitle.trim(),
+        category: projCategory.trim() || "Interior Commission",
+        shortDesc: projShortDesc.trim(),
+        image: primaryImage,
+        images: cleanImages,
+        dropdownDetails: projDropdownDetails.trim(),
+      };
+      updateInteriorProject && updateInteriorProject(updated);
+      triggerToast(`Updated project "${updated.title}"!`);
+    } else {
+      const newProj = {
+        id: "proj_" + Date.now(),
+        title: projTitle.trim(),
+        category: projCategory.trim() || "Interior Commission",
+        shortDesc: projShortDesc.trim(),
+        image: primaryImage,
+        images: cleanImages,
+        designer: "Asmita Gupta",
+        dropdownDetails: projDropdownDetails.trim(),
+      };
+      addInteriorProject && addInteriorProject(newProj);
+      triggerToast(`Added project "${newProj.title}"!`);
+    }
+
+    setShowProjectModal(false);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between border-b border-sky-400/20 pb-4">
+      {/* Sub-Tab Navigation Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sky-400/20 pb-4">
         <div>
           <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white">
-            Interior Excellence <span className="text-sky-500 dark:text-sky-400">Master Gallery</span>
+            Interior Architecture <span className="text-sky-500 dark:text-sky-400">Control Center</span>
           </h3>
           <p className="text-xs font-mono text-slate-600 dark:text-slate-400">
-            Upload luxury interior photographs, Calacatta marble showcases, and bespoke living suites directly from your gallery.
+            Manage Asmita Gupta's delivered projects (shown in Interior page & About team card) and master gallery spaces.
           </p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 text-white font-mono text-xs font-bold flex items-center gap-2 shadow-lg shadow-sky-500/25 hover:scale-105 transition-all cursor-pointer"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add Interior Space</span>
-        </button>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {interior.map((item) => (
-          <div
-            key={item.id}
-            className="rounded-2xl bg-white dark:bg-gradient-to-b dark:from-[#0F224D] dark:to-[#091533] border-2 border-sky-400/50 hover:border-sky-500 dark:hover:border-sky-400 ring-1 ring-sky-300/25 shadow-xl shadow-slate-200/50 dark:shadow-black/80 transition-all overflow-hidden flex flex-col justify-between"
+        {/* Tab Pills */}
+        <div className="flex items-center gap-2 bg-slate-100 dark:bg-black/30 p-1 rounded-xl border border-sky-400/25">
+          <button
+            type="button"
+            onClick={() => setActiveTab("projects")}
+            className={`px-3.5 py-1.5 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer ${
+              activeTab === "projects"
+                ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-md shadow-sky-500/25"
+                : "text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white"
+            }`}
           >
-            <div>
-              <div className="relative aspect-[16/10] overflow-hidden bg-slate-800">
-                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md font-mono text-[9px] text-sky-300 font-bold">
-                  {item.category}
-                </span>
-              </div>
-              <div className="p-4 space-y-1.5">
-                <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white truncate">{item.title}</h4>
-                <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">{item.paragraph}</p>
-              </div>
-            </div>
-
-            <div className="p-4 pt-0 flex justify-end">
-              <button
-                onClick={() => {
-                  if (confirm(`Delete interior space "${item.title}"?`)) {
-                    deleteInteriorSpace(item.id);
-                    triggerToast(`Deleted "${item.title}"`);
-                  }
-                }}
-                className="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-300 hover:text-rose-700 dark:hover:text-white font-mono text-[11px] font-bold flex items-center gap-1.5 cursor-pointer"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                <span>Delete</span>
-              </button>
-            </div>
-          </div>
-        ))}
+            Delivered Projects ({interiorProjects.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("spaces")}
+            className={`px-3.5 py-1.5 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer ${
+              activeTab === "spaces"
+                ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-md shadow-sky-500/25"
+                : "text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white"
+            }`}
+          >
+            Master Spaces ({interior.length})
+          </button>
+        </div>
       </div>
 
-      {/* Add Interior Space Modal */}
-      {showAddModal && (
+      {/* ======================================================== */}
+      {/* TAB 1: DESIGNER DELIVERED PROJECTS (ASMITA GUPTA & SHOWCASE) */}
+      {/* ======================================================== */}
+      {activeTab === "projects" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between bg-blue-50/70 dark:bg-sky-500/10 p-3.5 rounded-2xl border border-blue-200 dark:border-sky-400/20">
+            <div>
+              <span className="font-mono text-xs font-bold text-blue-700 dark:text-sky-300 uppercase block">
+                Asmita Gupta • Delivered Projects Showcase
+              </span>
+              <p className="text-[11px] font-sans text-slate-600 dark:text-slate-300 mt-0.5">
+                These projects sync automatically with the About page Team Card and the Interior Landing Page with interactive dropdown specs.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleOpenAddProject}
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 text-white font-mono text-xs font-bold flex items-center gap-1.5 shadow-md shadow-sky-500/25 hover:scale-105 transition-all cursor-pointer shrink-0"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Add Project</span>
+            </button>
+          </div>
+
+          <div className="space-y-3.5">
+            {interiorProjects.map((item) => {
+              const itemImages = Array.isArray(item.images) && item.images.length > 0
+                ? item.images
+                : (item.image ? [item.image] : []);
+              const thumb = itemImages[0] || null;
+
+              return (
+                <div
+                  key={item.id}
+                  className="rounded-2xl p-4 bg-white dark:bg-gradient-to-r dark:from-[#0E204A] dark:to-[#081735] border border-slate-200 dark:border-sky-400/30 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                >
+                  {/* Left Thumbnail */}
+                  <div className="relative w-full sm:w-28 h-20 rounded-xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-sky-400/30 shrink-0">
+                    {thumb ? (
+                      <img src={thumb} alt={item.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-slate-800 text-[10px] font-mono text-slate-400">
+                        No Photo
+                      </div>
+                    )}
+                    <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-md font-mono text-[8.5px] text-sky-300 font-bold uppercase truncate max-w-[95%]">
+                      {item.category}
+                    </span>
+                    {itemImages.length > 1 && (
+                      <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-blue-600/90 font-mono text-[8.5px] text-white font-bold">
+                        {itemImages.length} Photos
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Center Content */}
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-display text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                        {item.title}
+                      </h4>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-1 font-sans">
+                      {item.shortDesc || item.description}
+                    </p>
+                    <div className="text-[10.5px] font-mono text-sky-600 dark:text-sky-300 line-clamp-1">
+                      Specs: {item.dropdownDetails ? `${item.dropdownDetails.split('\n').filter(Boolean).length} points configured` : "No specs configured"}
+                    </div>
+                  </div>
+
+                  {/* Right Actions */}
+                  <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditProject(item)}
+                      className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-sky-500/15 dark:hover:bg-sky-500/25 text-blue-700 dark:text-sky-300 font-mono text-xs font-bold flex items-center gap-1 cursor-pointer transition-all"
+                    >
+                      <Edit3 className="h-3 w-3" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm(`Delete project "${item.title}"?`)) {
+                          deleteInteriorProject && deleteInteriorProject(item.id);
+                          triggerToast(`Deleted "${item.title}"`);
+                        }
+                      }}
+                      className="p-1.5 rounded-xl hover:bg-rose-500/15 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
+                      title="Delete project"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* TAB 2: MASTER SPACES GALLERY */}
+      {/* ======================================================== */}
+      {activeTab === "spaces" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-mono text-slate-600 dark:text-slate-400">
+              Curated architectural spaces shown in the 9-space exhibition grid on the Interior Landing Page.
+            </p>
+            <button
+              onClick={() => setShowAddSpaceModal(true)}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 text-white font-mono text-xs font-bold flex items-center gap-2 shadow-lg shadow-sky-500/25 hover:scale-105 transition-all cursor-pointer"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Interior Space</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {interior.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-2xl bg-white dark:bg-gradient-to-b dark:from-[#0F224D] dark:to-[#091533] border-2 border-sky-400/50 hover:border-sky-500 dark:hover:border-sky-400 ring-1 ring-sky-300/25 shadow-xl shadow-slate-200/50 dark:shadow-black/80 transition-all overflow-hidden flex flex-col justify-between"
+              >
+                <div>
+                  <div className="relative aspect-[16/10] overflow-hidden bg-slate-800">
+                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                    <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md font-mono text-[9px] text-sky-300 font-bold">
+                      {item.category}
+                    </span>
+                  </div>
+                  <div className="p-4 space-y-1.5">
+                    <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white truncate">{item.title}</h4>
+                    <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">{item.paragraph}</p>
+                  </div>
+                </div>
+
+                <div className="p-4 pt-0 flex justify-end">
+                  <button
+                    onClick={() => {
+                      if (confirm(`Delete interior space "${item.title}"?`)) {
+                        deleteInteriorSpace && deleteInteriorSpace(item.id);
+                        triggerToast(`Deleted "${item.title}"`);
+                      }
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-300 hover:text-rose-700 dark:hover:text-white font-mono text-[11px] font-bold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Delete</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Add/Edit Designer Delivered Project */}
+      {showProjectModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <form
-            onSubmit={handleAddSubmit}
+            onSubmit={handleProjectSubmit}
+            className="w-full max-w-lg p-6 rounded-3xl bg-white dark:bg-[#081534] border-2 border-sky-400 ring-1 ring-sky-300/30 shadow-2xl text-slate-900 dark:text-white space-y-4 font-mono text-xs max-h-[90vh] overflow-y-auto no-scrollbar"
+          >
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-sky-400/20 pb-3">
+              <h4 className="font-display text-lg font-bold text-slate-900 dark:text-white">
+                {editingProject ? "Edit Delivered Project" : "Add Delivered Project"}
+              </h4>
+              <button
+                type="button"
+                onClick={() => setShowProjectModal(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 font-sans">
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                  Project Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Lord Shiva International School"
+                  value={projTitle}
+                  onChange={(e) => setProjTitle(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                  Category / Sector
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Institutional & Educational or Luxury Residential"
+                  value={projCategory}
+                  onChange={(e) => setProjCategory(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">
+                  Short Summary (Shown on Card Header)
+                </label>
+                <textarea
+                  rows={2}
+                  required
+                  placeholder="Brief summary of the delivered work..."
+                  value={projShortDesc}
+                  onChange={(e) => setProjShortDesc(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
+                />
+              </div>
+
+              {/* Photo Upload from Device Gallery (Optional: Single or Multiple) */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase">
+                    Project Photos (Gallery Upload)
+                  </label>
+                  <span className="text-[10px] font-mono text-sky-600 dark:text-sky-400 font-semibold">
+                    Optional (1 ya Multiple photos)
+                  </span>
+                </div>
+
+                <div className="space-y-2.5">
+                  <label className="px-3 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-700 dark:text-sky-300 text-xs font-mono font-bold cursor-pointer inline-flex items-center gap-1.5 transition-all">
+                    <Upload className="h-3.5 w-3.5" />
+                    <span>Select Photo(s) From Gallery</span>
+                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleUploadProjectPhotos} />
+                  </label>
+
+                  {/* Photo Preview Grid */}
+                  {projImages && projImages.length > 0 ? (
+                    <div className="grid grid-cols-4 gap-2 pt-1">
+                      {projImages.map((imgUrl, imgIdx) => (
+                        <div key={imgIdx} className="relative aspect-[4/3] rounded-lg overflow-hidden bg-slate-800 border border-sky-400/30 group">
+                          <img src={imgUrl} alt={`Photo ${imgIdx + 1}`} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveProjectPhoto(imgIdx)}
+                            className="absolute top-1 right-1 p-1 rounded-full bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-sm cursor-pointer"
+                            title="Remove photo"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/75 text-[8.5px] font-mono text-white">
+                            #{imgIdx + 1}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-3 rounded-xl bg-slate-100 dark:bg-black/30 border border-dashed border-slate-300 dark:border-sky-400/25 text-[11px] font-mono text-slate-500 dark:text-slate-400 text-center">
+                      No photos added. (Photo optional: project card will display architectural layout cleanly).
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Specifications / Highlights */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase">
+                    Key Highlights & Specifications
+                  </label>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    (Har line card me bullet point banegi)
+                  </span>
+                </div>
+                <textarea
+                  rows={4}
+                  required
+                  placeholder="• Functional Space Planning: High-traffic layouts prioritizing student safety\n• Brand Integration: Precision modular fittings with SLEEK & HETTICH\n• Materials: Italian marble, acoustic panels, and smart lighting"
+                  value={projDropdownDetails}
+                  onChange={(e) => setProjDropdownDetails(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-xs leading-relaxed font-sans"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-sky-400/20 font-mono">
+              <button
+                type="button"
+                onClick={() => setShowProjectModal(false)}
+                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white font-bold cursor-pointer shadow-lg shadow-sky-500/25"
+              >
+                {editingProject ? "Update Project" : "Add Project"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Modal: Add Interior Space (Gallery) */}
+      {showAddSpaceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <form
+            onSubmit={handleAddSpaceSubmit}
             className="w-full max-w-lg p-6 rounded-3xl bg-white dark:bg-[#081534] border-2 border-sky-400 ring-1 ring-sky-300/30 shadow-2xl text-slate-900 dark:text-white space-y-4 font-mono text-xs"
           >
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-sky-400/20 pb-3">
               <h4 className="font-display text-lg font-bold text-slate-900 dark:text-white">Add Luxury Interior Space</h4>
-              <button onClick={() => setShowAddModal(false)} type="button" className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+              <button onClick={() => setShowAddSpaceModal(false)} type="button" className="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -3067,8 +3461,8 @@ const InteriorEditorView = ({
                   type="text"
                   required
                   placeholder="e.g. BESPOKE PENTHOUSE TERRACE LOUNGE"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
+                  value={newSpaceTitle}
+                  onChange={(e) => setNewSpaceTitle(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
                 />
               </div>
@@ -3076,8 +3470,8 @@ const InteriorEditorView = ({
               <div>
                 <label className="block text-slate-700 dark:text-slate-300 font-mono text-xs uppercase mb-1">Category</label>
                 <select
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
+                  value={newSpaceCategory}
+                  onChange={(e) => setNewSpaceCategory(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
                 >
                   <option value="Living Suite">Living Suite</option>
@@ -3097,8 +3491,8 @@ const InteriorEditorView = ({
                   rows={2}
                   required
                   placeholder="Detailed interior description..."
-                  value={newParagraph}
-                  onChange={(e) => setNewParagraph(e.target.value)}
+                  value={newSpaceParagraph}
+                  onChange={(e) => setNewSpaceParagraph(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#040C20] border border-sky-400/35 text-slate-900 dark:text-white text-sm"
                 />
               </div>
@@ -3110,21 +3504,21 @@ const InteriorEditorView = ({
                 </label>
                 <div className="flex items-center gap-3">
                   <div className="h-12 w-20 rounded-lg overflow-hidden bg-slate-800 shrink-0">
-                    <img src={newImage} alt="Preview" className="w-full h-full object-cover" />
+                    <img src={newSpaceImage} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                   <label className="px-3 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-700 dark:text-sky-300 text-xs font-mono font-bold cursor-pointer flex items-center gap-1.5">
                     <Upload className="h-3.5 w-3.5" />
                     <span>Select Photo From Gallery</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleUploadPhoto} />
+                    <input type="file" accept="image/*" className="hidden" onChange={handleUploadSpacePhoto} />
                   </label>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-sky-400/20">
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-sky-400/20 font-mono">
               <button
                 type="button"
-                onClick={() => setShowAddModal(false)}
+                onClick={() => setShowAddSpaceModal(false)}
                 className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white cursor-pointer"
               >
                 Cancel

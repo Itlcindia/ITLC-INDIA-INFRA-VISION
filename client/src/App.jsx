@@ -161,6 +161,21 @@ export function App() {
       return;
     }
 
+    if (route === "interior-projects" || route === "interior#designer-projects") {
+      setActiveRoute("interior");
+      setTimeout(() => {
+        const projEl = document.getElementById("designer-projects");
+        if (projEl) {
+          if (lenisRef.current) {
+            lenisRef.current.scrollTo(projEl, { offset: -90, duration: 1.2 });
+          } else {
+            projEl.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      }, 250);
+      return;
+    }
+
     if (["privacy-policy", "terms-of-service", "disclaimer", "legal"].includes(route)) {
       if (route !== "legal") {
         setLegalTab(route);
@@ -315,7 +330,10 @@ export function App() {
           )}
 
           {activeRoute === "about" && (
-            <AboutPage onInquiryClick={() => setIsConsultationOpen(true)} />
+            <AboutPage
+              onInquiryClick={() => setIsConsultationOpen(true)}
+              onRouteChange={handleRouteChange}
+            />
           )}
 
           {activeRoute === "contact" && (

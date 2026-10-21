@@ -190,7 +190,7 @@ const formatBioWithHighlights = (rawText) => {
   );
 };
 
-export const AboutPage = ({ onInquiryClick }) => {
+export const AboutPage = ({ onInquiryClick, onRouteChange }) => {
   const { team = [], aboutContent = {} } = useCMS();
   const [selectedMemberForModal, setSelectedMemberForModal] = useState(null);
 
@@ -439,92 +439,113 @@ export const AboutPage = ({ onInquiryClick }) => {
             teamMembers.map((member, idx) => {
               const memberImg = member.photo || member.image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop";
               const roleText = member.role || "Lead Specialist";
-              const qualText = member.qualification || member.credentials || "B.Tech Civil";
               const expText = member.experience || "10+ Years Exp";
-              const tagText = member.tag || qualText || "IS-456 STRUCTURAL LEAD";
+              const isInterior = member.id === "interior" || (member.role || "").toLowerCase().includes("interior");
 
-              const specsList = Array.isArray(member.specs) && member.specs.length > 0
-                ? member.specs
-                : (qualText 
-                    ? qualText.split(",").map(s => s.trim()).filter(Boolean)
-                    : ["Certified Lead", "Site Supervision", "Grade-A Execution"]);
+              const deliveredProjects = Array.isArray(member.projects) && member.projects.length > 0
+                ? member.projects
+                : (isInterior
+                    ? [
+                        "Lord Shiva International School (Institutional)",
+                        "Azia Botanica (Multi-Unit Luxury Living)",
+                        "Car Detailing Center @ Faizabad Road",
+                        "RTO AGRA / SGPGI Luxury Residential",
+                      ]
+                    : (Array.isArray(member.specs) && member.specs.length > 0 ? member.specs : [
+                        "Grade-A Execution & Quality Audits",
+                        "Site Supervision & Structural Compliance",
+                        "Precision Engineering & Safe Handover"
+                      ]));
 
               return (
                 <div
                   key={member.id || idx}
-                  className="group relative rounded-3xl bg-white/95 dark:bg-gradient-to-b dark:from-[#0B1A3C] dark:via-[#07132F] dark:to-[#040C20] border border-slate-200 dark:border-sky-400/25 hover:border-sky-400/60 dark:hover:border-sky-400/80 shadow-xl hover:shadow-2xl hover:shadow-sky-500/10 transition-all duration-500 flex flex-col justify-between overflow-hidden p-1.5 sm:p-2"
+                  className="group relative rounded-3xl bg-white/95 dark:bg-gradient-to-b dark:from-[#0B1A3C] dark:via-[#07132F] dark:to-[#040C20] border border-slate-200 dark:border-sky-400/25 hover:border-sky-400/60 dark:hover:border-sky-400/80 shadow-xl hover:shadow-2xl hover:shadow-sky-500/10 transition-all duration-500 flex flex-col justify-between overflow-hidden p-4 sm:p-5 space-y-3.5"
                 >
-                  {/* Nested Image Frame (Expanded Width/Height with Ultra-Slim Hairline Gap) */}
-                  <div className="relative h-[290px] sm:h-[320px] w-full rounded-[20px] overflow-hidden bg-slate-900 border border-slate-200/90 dark:border-sky-400/40 shadow-md ring-1 ring-black/5 dark:ring-sky-300/10 shrink-0">
-                    <img
-                      src={memberImg}
-                      alt={member.name}
-                      className="w-full h-full object-contain p-2 pb-16 pt-9 filter contrast-[1.05] group-hover:scale-105 transition-all duration-700 ease-out"
-                      loading="lazy"
-                    />
-                    
-                    {/* Dark gradient scrim */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#040C20]/90 via-[#040C20]/20 to-transparent pointer-events-none" />
-
-                    {/* Top floating pill tags */}
-                    <div className="absolute top-3 inset-x-3 flex items-center justify-between z-10 gap-2">
-                      <span className="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-sky-300 font-mono text-[9.5px] font-bold tracking-wider uppercase truncate">
-                        {tagText}
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-blue-600/80 backdrop-blur-md border border-sky-300/30 text-white font-mono text-[9.5px] font-bold shrink-0">
-                        {expText}
-                      </span>
-                    </div>
-
-                    {/* Bottom identity overlaid on photo */}
-                    <div className="absolute bottom-3 inset-x-3.5 z-10 space-y-0.5">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
-                        <span className="text-[9px] font-mono font-bold tracking-widest text-sky-300 uppercase">
+                  {/* Top: Circle Photo + Beside Name & Role */}
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-sky-400/70 shadow-md ring-2 ring-sky-300/20 shrink-0 bg-slate-900 flex items-center justify-center">
+                        <img
+                          src={memberImg}
+                          alt={member.name}
+                          className="w-full h-full object-cover filter contrast-[1.05] group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1 space-y-0.5">
+                        <span className="text-[9px] font-mono font-bold tracking-widest text-blue-600 dark:text-sky-400 uppercase block">
                           OFFICIAL SPECIALIST
                         </span>
+                        <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight truncate">
+                          {member.name}
+                        </h3>
+                        <p className="font-mono text-[11px] text-sky-600 dark:text-sky-300 font-semibold truncate">
+                          {roleText}
+                        </p>
                       </div>
-                      <h3 className="font-display text-lg sm:text-xl font-bold text-white tracking-tight leading-tight group-hover:text-sky-300 transition-colors">
-                        {member.name}
-                      </h3>
-                      <p className="font-mono text-[11px] text-slate-300 font-medium truncate">
-                        {roleText}
-                      </p>
+                    </div>
+
+                    {/* Photo ke just niche Experience Line */}
+                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-blue-50/70 dark:bg-sky-500/10 border border-blue-200/60 dark:border-sky-400/20">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-sky-400 animate-pulse shrink-0" />
+                      <span className="font-mono text-[11px] sm:text-xs font-bold text-blue-800 dark:text-sky-300 truncate">
+                        {member.experienceDetail || (isInterior ? "20+ Years Experience in Interior Design" : `${expText} Industry Experience`)}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Lower Excerpt & View More Trigger */}
-                  <div className="pt-3.5 pb-1.5 px-2.5 space-y-3 flex flex-col justify-between flex-1">
-                    {/* Short Bio preview */}
-                    <p className="text-[11.5px] sm:text-xs text-slate-600 dark:text-gray-300 font-sans line-clamp-2 leading-relaxed text-justify [text-justify:inter-word]">
-                      {member.bio || member.viewMoreText || "Key contributor to INFRA VISION's architectural engineering leadership."}
-                    </p>
-
-                    {/* Specialization Tags */}
-                    <div className="flex flex-wrap gap-1.5 pt-0.5">
-                      {specsList.slice(0, 3).map((spec, sIdx) => (
-                        <span
-                          key={sIdx}
-                          className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-sky-500/10 border border-blue-200/60 dark:border-sky-400/20 text-blue-700 dark:text-sky-300 font-mono text-[9.5px] font-semibold truncate"
-                        >
-                          {spec}
+                  {/* Middle: Delivered Projects Box with 'View' button */}
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-black/30 border border-slate-200/80 dark:border-sky-400/20 space-y-2 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between pb-1.5 border-b border-slate-200/60 dark:border-sky-400/15">
+                        <span className="text-[10px] font-mono font-bold tracking-wider text-blue-600 dark:text-sky-400 uppercase">
+                          KEY DELIVERED PROJECTS
                         </span>
-                      ))}
-                    </div>
+                        {isInterior && (
+                          <button
+                            onClick={() => {
+                              soundManager?.playHapticClick?.(600);
+                              if (onRouteChange) {
+                                onRouteChange("interior-projects");
+                              } else {
+                                window.location.href = "/interior#designer-projects";
+                              }
+                            }}
+                            className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white font-mono text-[10.5px] font-bold tracking-wider uppercase flex items-center gap-1 shadow-sm shadow-blue-500/20 transition-all cursor-pointer hover:scale-105"
+                            title="View projects on Interior Page"
+                          >
+                            <span>View</span>
+                            <ArrowUpRight className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
 
-                    {/* "View Dossier & Bio" Button */}
-                    <div className="pt-2 border-t border-slate-100 dark:border-sky-400/15">
-                      <button
-                        onClick={() => {
-                          soundManager?.playHapticClick?.(600);
-                          setSelectedMemberForModal(member);
-                        }}
-                        className="w-full py-2 px-3.5 rounded-xl bg-slate-100 hover:bg-blue-600 dark:bg-sky-500/10 dark:hover:bg-gradient-to-r dark:hover:from-blue-600 dark:hover:to-sky-500 border border-slate-200 dark:border-sky-400/30 text-slate-800 dark:text-sky-300 hover:text-white dark:hover:text-white font-mono text-[11px] font-bold tracking-wider uppercase flex items-center justify-between transition-all duration-300 group/btn cursor-pointer shadow-sm hover:shadow-lg hover:shadow-sky-500/25"
-                      >
-                        <span>View Dossier & Bio</span>
-                        <ArrowUpRight className="w-3.5 h-3.5 text-slate-500 dark:text-sky-400 group-hover/btn:text-white group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                      </button>
+                      <ul className="space-y-1.5 pt-2">
+                        {deliveredProjects.map((proj, pIdx) => (
+                          <li key={pIdx} className="flex items-start gap-2 text-left">
+                            <span className="text-blue-600 dark:text-sky-400 font-bold text-xs leading-none mt-0.5 shrink-0">✦</span>
+                            <span className="text-[11.5px] sm:text-xs text-slate-700 dark:text-slate-200 font-sans leading-snug line-clamp-1">
+                              {proj}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
+                  </div>
+
+                  {/* Bottom: View Dossier & Bio Button (Popup Modal) */}
+                  <div className="pt-1 border-t border-slate-100 dark:border-sky-400/15">
+                    <button
+                      onClick={() => {
+                        soundManager?.playHapticClick?.(600);
+                        setSelectedMemberForModal(member);
+                      }}
+                      className="w-full py-2 px-3.5 rounded-xl bg-slate-100 hover:bg-blue-600 dark:bg-sky-500/10 dark:hover:bg-gradient-to-r dark:hover:from-blue-600 dark:hover:to-sky-500 border border-slate-200 dark:border-sky-400/30 text-slate-800 dark:text-sky-300 hover:text-white dark:hover:text-white font-mono text-[11px] font-bold tracking-wider uppercase flex items-center justify-between transition-all duration-300 group/btn cursor-pointer shadow-sm hover:shadow-lg hover:shadow-sky-500/25"
+                    >
+                      <span>View Dossier & Bio</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-slate-500 dark:text-sky-400 group-hover/btn:text-white group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                    </button>
                   </div>
                 </div>
               );
